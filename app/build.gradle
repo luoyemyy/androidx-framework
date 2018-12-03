@@ -1,0 +1,93 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    signingConfigs {
+        config {
+        }
+    }
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.github.luoyemyy.framework.test"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes.all { type ->
+        type.matchingFallbacks = ['debug']
+    }
+
+    buildTypes {
+
+        debug {
+            buildConfigField("Integer", "PROFILE", "1")
+        }
+
+        debugDev {
+            buildConfigField("Integer", "PROFILE", "1")
+        }
+
+        debugTest {
+            buildConfigField("Integer", "PROFILE", "2")
+        }
+
+        debugDemo {
+            buildConfigField("Integer", "PROFILE", "3")
+        }
+
+        release {
+            buildConfigField("Integer", "PROFILE", "4")
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    dataBinding {
+        enabled = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_version"
+    implementation "androidx.appcompat:appcompat:$support_version"
+    implementation "androidx.recyclerview:recyclerview:$support_version"
+    implementation "androidx.legacy:legacy-support-v4:$support_version"
+    implementation "androidx.fragment:fragment:$support_version"
+    implementation "com.google.android.material:material:$support_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
+    implementation "com.google.code.gson:gson:$gson_version"
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+//    implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0-alpha07'
+//    implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0-alpha07'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.9.0'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.0'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.9.0'
+
+    implementation project(':async')
+    implementation project(':audio')
+    implementation project(':bus')
+    implementation project(':config')
+    implementation project(':file')
+    implementation project(':logger')
+    implementation project(':mvp')
+    implementation project(':ext')
+    implementation project(':permission')
+    implementation project(':image_picker')
+}

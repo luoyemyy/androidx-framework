@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.luoyemyy.picker">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <application>
+        <activity
+            android:name=".album.AlbumActivity"
+            android:theme="@style/ImagePickerAlbumTheme" />
+        <activity
+            android:name=".preview.PreviewActivity"
+            android:theme="@style/ImagePickerPreviewTheme" />
+        <activity
+            android:name=".crop.CropActivity"
+            android:theme="@style/ImagePickerAlbumTheme" />
+    </application>
+</manifest>

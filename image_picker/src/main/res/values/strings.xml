@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_picker_album_title">选择图片</string>
+    <string name="image_picker_selected">%d/%d</string>
+    <string name="image_picker_all_image">所有图片</string>
+    <string name="image_picker_sure">确认</string>
+    <string name="image_picker_count">共%d张</string>
+    <string name="image_picker_tip1">请选择1张图片</string>
+    <string name="image_picker_tip2">最多可以选择%d张图片</string>
+    <string name="image_picker_tip3">最少需要选择%d张图片</string>
+    <string name="image_picker_preview_title">查看图片</string>
+    <string name="image_picker_crop">裁剪</string>
+    <string name="image_picker_reset">重置图片</string>
+    <string name="image_picker_crop_title">裁剪图片</string>
+    <string name="image_picker_crop_tip">请裁剪当前图片</string>
+    <string name="image_picker_create_file_failure">新建图片失败</string>
+
+    <string name="image_picker_need_camera_app">没有找到可以使用相机的应用</string>
+    <string name="image_picker_need_camera_storage">拍照需要使用相机和存储图片的权限</string>
+    <string name="image_picker_need_storage">相册需要读取图片的权限</string>
+
+    <string-array name="image_picker_type">
+        <item>相册</item>
+        <item>拍照</item>
+    </string-array>
+</resources>

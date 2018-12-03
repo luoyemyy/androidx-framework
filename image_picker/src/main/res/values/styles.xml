@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ImagePickerAlbumTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/image_picker_in</item>
+        <item name="android:windowExitTransition">@transition/image_picker_out</item>
+    </style>
+
+    <style name="ImagePickerPreviewTheme" parent="ImagePickerAlbumTheme">
+        <item name="android:windowEnterTransition">@transition/image_picker_preview</item>
+        <item name="android:windowExitTransition">@transition/image_picker_preview</item>
+    </style>
+</resources>
