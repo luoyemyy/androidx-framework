@@ -11,7 +11,7 @@ import com.github.luoyemyy.config.app.AppInfo
  */
 
 fun Context.spf(): SharedPreferences {
-    return this.getSharedPreferences(AppInfo.preferencesName, 0)
+    return this.getSharedPreferences(AppInfo.appInfo, 0)
 }
 
 fun Context.editor(): SharedPreferences.Editor {

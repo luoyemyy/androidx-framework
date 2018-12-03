@@ -260,7 +260,7 @@ class DataSet<T> {
     /**
      * 增加内容列表，出现错误，刷新变化
      */
-    fun setError(adapter: RecyclerView.Adapter<*>) {
+    fun setMoreError(adapter: RecyclerView.Adapter<*>) {
         postData {
             loadMoreError()
         }.dispatchUpdatesTo(adapter)
@@ -289,6 +289,16 @@ class DataSet<T> {
     fun change(position: Int, adapter: RecyclerView.Adapter<*>, change: (value: T) -> Unit = {}) {
         item(position)?.let {
             change(it)
+            adapter.notifyItemChanged(position, "change")
+        }
+    }
+
+    /**
+     * 修改某一项数据，并刷新变化的数据
+     */
+    fun change(value: T?, adapter: RecyclerView.Adapter<*>) {
+        val position = itemList().indexOfFirst { it == value }
+        if (position >= 0) {
             adapter.notifyItemChanged(position, "change")
         }
     }

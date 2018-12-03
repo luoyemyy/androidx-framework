@@ -9,13 +9,13 @@ import com.github.luoyemyy.logger.Logger
 object AppInfo {
 
     lateinit var packageName: String
-    lateinit var preferencesName: String
+    lateinit var appInfo: String
     lateinit var profile: Profile
 
     fun init(app: Application, enableConsoleLog: Boolean = true, enableFileLog: Boolean = true, spfName: String? = null) {
 
         packageName = app.packageName
-        preferencesName = spfName ?: "app_info"
+        appInfo = spfName ?: "app_info"
 
         FileManager.initManager(app)
         AppError.init(app)
