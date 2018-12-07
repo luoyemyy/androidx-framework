@@ -13,5 +13,6 @@
         android:layout_height="wrap_content"
         android:background="@drawable/debug_selector_item"
         android:padding="16dp"
-        android:text="@{name}" />
+        android:text="@{name}"
+        android:textAllCaps="false" />
 </layout>

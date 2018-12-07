@@ -18,34 +18,48 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes.all { type ->
-        type.matchingFallbacks = ['debug']
-    }
-
     buildTypes {
-
-        debug {
-            buildConfigField("Integer", "PROFILE", "1")
-        }
-
-        debugDev {
-            buildConfigField("Integer", "PROFILE", "1")
-        }
-
-        debugTest {
-            buildConfigField("Integer", "PROFILE", "2")
-        }
-
-        debugDemo {
-            buildConfigField("Integer", "PROFILE", "3")
-        }
-
         release {
-            buildConfigField("Integer", "PROFILE", "4")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "app", "channel"
+
+    productFlavors {
+        dev {
+            dimension "app"
+            buildConfigField "int", "PROFILE", "1"
+        }
+        ttest {
+            dimension "app"
+            buildConfigField "int", "PROFILE", "2"
+        }
+        demo {
+            dimension "app"
+            buildConfigField "int", "PROFILE", "3"
+        }
+        pro {
+            dimension "app"
+            buildConfigField "int", "PROFILE", "4"
+        }
+
+        ddefault {
+            dimension "channel"
+            buildConfigField "String", "CHANNEL", "\"default\""
+        }
+        xiaomi {
+            dimension "channel"
+            buildConfigField "String", "CHANNEL", "\"$name\""
+            buildConfigField "String", "KEY", "\"key\""
+        }
+        oppo {
+            dimension "channel"
+            buildConfigField "String", "CHANNEL", "\"$name\""
+        }
+    }
+
     dataBinding {
         enabled = true
     }
@@ -60,7 +74,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraint_version"
-    implementation "androidx.appcompat:appcompat:$support_version"
+    implementation "androidx.appcompat:appcompat:$compat_version"
     implementation "androidx.recyclerview:recyclerview:$support_version"
     implementation "androidx.legacy:legacy-support-v4:$support_version"
     implementation "androidx.fragment:fragment:$support_version"
@@ -74,11 +88,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-//    implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0-alpha07'
-//    implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0-alpha07'
     implementation 'com.google.android.exoplayer:exoplayer-core:2.9.0'
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.0'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.9.0'
+
+    implementation "com.github.bumptech.glide:glide:$glide_version"
 
     implementation project(':async')
     implementation project(':audio')
@@ -90,4 +104,6 @@ dependencies {
     implementation project(':ext')
     implementation project(':permission')
     implementation project(':image_picker')
+    implementation project(':debug')
+    implementation project(':exo_player')
 }

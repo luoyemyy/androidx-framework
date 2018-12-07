@@ -1,2 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.luoyemyy.debug" />
+    package="com.github.luoyemyy.debug">
+
+    <application>
+        <activity
+            android:name=".DebugActivity"
+            android:theme="@style/DebugTheme" />
+        <activity
+            android:name=".log.LogActivity"
+            android:theme="@style/DebugTheme" />
+    </application>
+
+</manifest>

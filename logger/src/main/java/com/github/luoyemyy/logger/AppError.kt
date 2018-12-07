@@ -14,7 +14,7 @@ import java.util.*
 
 class AppError private constructor(private val mApp: Application, private val mDefaultHandler: Thread.UncaughtExceptionHandler) : Thread.UncaughtExceptionHandler {
 
-    //用来存储设备信息和异常信息
+    //用来存储设备信息
     private var deviceInfo: String? = null
 
     override fun uncaughtException(thread: Thread?, ex: Throwable?) {
@@ -45,13 +45,12 @@ class AppError private constructor(private val mApp: Application, private val mD
         return File.createTempFile(logFileName, ".log.txt", File(path))
     }
 
-    @Suppress("DEPRECATION")
     private fun collectDeviceInfo(context: Context) {
         val stringBuilder = StringBuilder()
         try {
             val pm = context.packageManager
             val pi = pm.getPackageInfo(context.packageName, 0)
-            stringBuilder.append("versionCode").append("=").append(pi.versionCode).append("\n")
+            stringBuilder.append("versionCode").append("=").append(pi.longVersionCode).append("\n")
             stringBuilder.append("versionName").append("=").append(pi.versionName).append("\n")
 
             val fields = Build::class.java.declaredFields

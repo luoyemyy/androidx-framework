@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import com.github.luoyemyy.bus.BusManager
 import com.github.luoyemyy.bus.BusMsg
 import com.github.luoyemyy.bus.BusResult
+import com.github.luoyemyy.debug.DebugActivity
 import com.github.luoyemyy.ext.toast
 import com.github.luoyemyy.framework.test.databinding.ActivityMainBinding
 import com.github.luoyemyy.framework.test.databinding.ActivityMainRecyclerBinding
@@ -94,6 +95,16 @@ class MainActivity : AppCompatActivity(), BusResult {
                     startActivity(Intent.createChooser(qqIntent, "分享"))
                 }
                 12 -> startActivity(Intent(this@MainActivity, DesignActivity::class.java))
+                13 -> startActivity(Intent(this@MainActivity, DebugActivity::class.java))
+                14 -> {
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                    intent.type = "image/*"
+                    intent.addCategory(Intent.CATEGORY_OPENABLE)
+                    if (intent.resolveActivity(packageManager) != null) {
+                        startActivityForResult(intent, 1)
+                    }
+                }
+
             }
         }
 
@@ -115,7 +126,9 @@ class MainActivity : AppCompatActivity(), BusResult {
                     Action(8, "exoPlayer"),
                     Action(9, "imagePicker"),
                     Action(11, "分享"),
-                    Action(12, "design")
+                    Action(12, "design"),
+                    Action(13, "debug"),
+                    Action(14, "picker")
             )
         }
     }

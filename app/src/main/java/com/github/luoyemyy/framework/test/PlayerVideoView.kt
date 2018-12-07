@@ -14,7 +14,6 @@ class PlayerVideoView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     private lateinit var mFullScreenButton: Button
 
     init {
-
     }
 
 }
