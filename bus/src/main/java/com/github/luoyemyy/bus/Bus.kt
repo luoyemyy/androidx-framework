@@ -9,7 +9,8 @@ import androidx.lifecycle.Lifecycle
 /**
  *
  */
-object BusManager {
+
+object Bus {
 
     private val mCallbacks = mutableListOf<Callback>()
     private val mHandler = Handler(Looper.getMainLooper())
@@ -19,7 +20,7 @@ object BusManager {
     }
 
     /**
-     * 注册回调
+     * 注册观察者
      *
      * @param callback
      */
@@ -28,6 +29,9 @@ object BusManager {
         mCallbacks.add(callback)
     }
 
+    /**
+     * 注册观察者,如果此事件有观察者，先移除已存在的，然后设置新的
+     */
     @MainThread
     fun replaceRegister(callback: Callback) {
         mCallbacks.removeAll { it.interceptEvent() == callback.interceptEvent() }
@@ -35,7 +39,7 @@ object BusManager {
     }
 
     /**
-     * 反注册回调
+     * 注销观察者
      *
      * @param callback
      */
@@ -54,16 +58,25 @@ object BusManager {
         }
     }
 
-    fun setCallback(lifecycle: Lifecycle, result: BusResult, vararg events: String) {
-        events.forEach {
-            BusRegistry(lifecycle, result, it).register(false)
-        }
+    /**
+     * 添加观察者，同一事件可以被多个观察者监听
+     * lifecycle#destroy时会注销此观察者
+     */
+    fun addCallback(lifecycle: Lifecycle, result: BusResult, vararg events: String) {
+        addCallback(false, lifecycle, result, *events)
     }
 
+    /**
+     * 添加观察者，同一事件只能被一个观察者监听，后设置的会覆盖之前的
+     * lifecycle#destroy时会注销此观察者
+     */
+    fun setCallback(lifecycle: Lifecycle, result: BusResult, vararg events: String) {
+        addCallback(true, lifecycle, result, *events)
+    }
 
-    fun replaceCallback(lifecycle: Lifecycle, result: BusResult, vararg events: String) {
+    private fun addCallback(replace: Boolean, lifecycle: Lifecycle, result: BusResult, vararg events: String) {
         events.forEach {
-            BusRegistry(lifecycle, result, it).register(true)
+            BusObserver(lifecycle, result, it).register(replace)
         }
     }
 }

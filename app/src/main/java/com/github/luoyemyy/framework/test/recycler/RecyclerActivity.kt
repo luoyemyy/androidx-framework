@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.github.luoyemyy.bus.BusManager
+import com.github.luoyemyy.bus.Bus
 import com.github.luoyemyy.bus.BusMsg
 import com.github.luoyemyy.bus.BusResult
 import com.github.luoyemyy.ext.toast
@@ -35,7 +35,7 @@ class RecyclerActivity : AppCompatActivity(), BusResult {
         mBinding.recyclerView.setLinearManager()
         mBinding.swipeRefreshLayout.wrap(mPresenter)
 
-        BusManager.setCallback(lifecycle, this, BUS_EVENT)
+        Bus.addCallback(lifecycle, this, BUS_EVENT)
 
         StickHelper.attachToRecyclerView(mBinding.recyclerView, mBinding.stick.root, object : StickHelper.Callback {
             override fun isStick(position: Int): Boolean {
@@ -96,8 +96,8 @@ class RecyclerActivity : AppCompatActivity(), BusResult {
 
         override fun beforeLoadRefresh() {
             super.beforeLoadRefresh()
-            BusManager.post(BUS_EVENT)
-            BusManager.post(MainActivity.BUS_EVENT)
+            Bus.post(BUS_EVENT)
+            Bus.post(MainActivity.BUS_EVENT)
         }
 
         override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?): List<Any>? {

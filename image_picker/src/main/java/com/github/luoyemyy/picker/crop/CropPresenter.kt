@@ -3,7 +3,7 @@ package com.github.luoyemyy.picker.crop
 import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
-import com.github.luoyemyy.bus.BusManager
+import com.github.luoyemyy.bus.Bus
 import com.github.luoyemyy.ext.toJsonString
 import com.github.luoyemyy.ext.toList
 import com.github.luoyemyy.ext.toast
@@ -69,7 +69,7 @@ class CropPresenter(var app: Application) : AbstractRecyclerPresenter<CropImage>
             app.toast(R.string.image_picker_crop_tip)
             return false
         }
-        BusManager.post(ImagePicker.PICKER_RESULT, stringValue = mImages.map { it.cropPath }.toJsonString())
+        Bus.post(ImagePicker.PICKER_RESULT, stringValue = mImages.map { it.cropPath }.toJsonString())
         return true
     }
 

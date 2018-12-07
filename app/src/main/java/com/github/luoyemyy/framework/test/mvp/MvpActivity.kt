@@ -3,7 +3,7 @@ package com.github.luoyemyy.framework.test.mvp
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.github.luoyemyy.bus.BusManager
+import com.github.luoyemyy.bus.Bus
 import com.github.luoyemyy.bus.BusMsg
 import com.github.luoyemyy.bus.BusResult
 import com.github.luoyemyy.ext.toast
@@ -26,7 +26,7 @@ class MvpActivity : AppCompatActivity(), BusResult {
 
         mBinding.presenter?.load()
 
-        BusManager.setCallback(lifecycle, this, EVENT_BUS)
+        Bus.addCallback(lifecycle, this, EVENT_BUS)
 
     }
 

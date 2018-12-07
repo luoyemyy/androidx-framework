@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.github.luoyemyy.bus.BusManager
+import com.github.luoyemyy.bus.Bus
 import com.github.luoyemyy.bus.BusMsg
 import com.github.luoyemyy.bus.BusResult
 import com.github.luoyemyy.debug.DebugActivity
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), BusResult {
 
         mBinding.recyclerView.setLinearManager()
 
-        BusManager.setCallback(lifecycle, this, BUS_EVENT)
+        Bus.addCallback(lifecycle, this, BUS_EVENT)
 
         mPresenter.loadInit()
     }

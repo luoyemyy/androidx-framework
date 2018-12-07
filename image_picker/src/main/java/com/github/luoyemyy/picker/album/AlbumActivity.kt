@@ -12,7 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
-import com.github.luoyemyy.bus.BusManager
+import com.github.luoyemyy.bus.Bus
 import com.github.luoyemyy.mvp.getRecyclerPresenter
 import com.github.luoyemyy.mvp.recycler.AbstractSingleRecyclerAdapter
 import com.github.luoyemyy.mvp.recycler.VH
@@ -120,7 +120,7 @@ class AlbumActivity : AppCompatActivity() {
                 if (r) {
                     when (ImagePicker.option.cropType) {
                         0 -> {
-                            BusManager.post(ImagePicker.PICKER_RESULT, stringValue = paths)
+                            Bus.post(ImagePicker.PICKER_RESULT, stringValue = paths)
                         }
                         1, 2 -> {
                             startActivity(Intent(this, CropActivity::class.java).putExtra("images", paths))

@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.github.luoyemyy.bus.BusManager
+import com.github.luoyemyy.bus.Bus
 import com.github.luoyemyy.bus.BusMsg
 import com.github.luoyemyy.bus.BusResult
 import com.github.luoyemyy.ext.toList
@@ -171,12 +171,12 @@ class ImagePicker private constructor() {
     }
 
     private fun toAlbum(activity: FragmentActivity, callback: (List<String>?) -> Unit) {
-        BusManager.replaceCallback(activity.lifecycle, PickerInternal(callback), PICKER_RESULT)
+        Bus.setCallback(activity.lifecycle, PickerInternal(callback), PICKER_RESULT)
         activity.startActivity(Intent(activity, AlbumActivity::class.java))
     }
 
     private fun toCapture(activity: FragmentActivity, callback: (List<String>?) -> Unit) {
-        BusManager.replaceCallback(activity.lifecycle, PickerInternal(callback), PICKER_RESULT)
+        Bus.setCallback(activity.lifecycle, PickerInternal(callback), PICKER_RESULT)
         CaptureFragment.start(activity.supportFragmentManager)
     }
 
