@@ -12,7 +12,7 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 
 
-class ExoPlayerHelper private constructor(lifecycle: Lifecycle, private val context: Context) : LifecycleObserver {
+class ExoPlayerHelper private constructor(lifecycle: Lifecycle, private val context: Context) : LifecycleObserver, Player.EventListener {
 
     companion object {
         fun newInstance(compatActivity: AppCompatActivity): ExoPlayerHelper {
@@ -24,33 +24,23 @@ class ExoPlayerHelper private constructor(lifecycle: Lifecycle, private val cont
         }
     }
 
-    init {
-        lifecycle.addObserver(this)
-    }
-
     private val mPlayer: SimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(context)
     private var mCurrentPlayerView: ExoPlayerView? = null
 
+    init {
+        mPlayer.addListener(this)
+        lifecycle.addObserver(this)
+    }
+
+
     fun play(url: String, exoPlayerView: ExoPlayerView) {
-        if (exoPlayerView != mCurrentPlayerView) {
-            mCurrentPlayerView?.clearPlayer(mPlayer)
-            mCurrentPlayerView = null
-        }
-        mCurrentPlayerView = exoPlayerView.apply {
-            exoPlayerView.initPlayer(url, mPlayer)
-        }
+
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun onDestroy(source: LifecycleOwner?) {
-        mCurrentPlayerView?.clearPlayer(mPlayer)
         stop(true)
         source?.lifecycle?.removeObserver(this)
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onPause(source: LifecycleOwner?) {
-        stop()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="exo_player_error">播放失败</string>
+    <string name="exo_player_not_wifi">当前不是wifi网络，确认继续播放吗？</string>
+    <string name="exo_player_no_network">播放失败，无法连接网络</string>
+    <string name="exo_player_cancel">取消</string>
+    <string name="exo_player_keep_play">继续播放</string>
+</resources>

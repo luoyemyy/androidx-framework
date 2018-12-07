@@ -9,6 +9,11 @@
         android:background="@android:color/black"
         android:visibility="visible">
 
+        <SurfaceView
+            android:id="@+id/surfaceView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <ImageView
             android:id="@+id/imgPlaceHolder"
             android:layout_width="match_parent"
@@ -142,11 +147,11 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:textSize="12sp"
-            app:layout_goneMarginEnd="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/seekBar"
             app:layout_constraintRight_toLeftOf="@id/imgFullscreen"
-            app:layout_constraintTop_toBottomOf="@id/guideline" />
+            app:layout_constraintTop_toBottomOf="@id/guideline"
+            app:layout_goneMarginEnd="16dp" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
