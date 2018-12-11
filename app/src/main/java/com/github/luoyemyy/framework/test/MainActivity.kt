@@ -3,6 +3,7 @@ package com.github.luoyemyy.framework.test
 import android.Manifest
 import android.app.Application
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity(), BusResult {
         mPresenter.setup(this, Adapter())
 
         mBinding.recyclerView.setLinearManager()
+        mBinding.recyclerView.addItemDecoration(RecyclerDecoration.beginMiddleEnd(this, 1, true).drawDivider(Color.BLUE, 48, 48, true))
 
         Bus.addCallback(lifecycle, this, BUS_EVENT)
 

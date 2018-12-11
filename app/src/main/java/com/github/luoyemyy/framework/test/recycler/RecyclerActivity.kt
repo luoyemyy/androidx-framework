@@ -1,24 +1,24 @@
 package com.github.luoyemyy.framework.test.recycler
 
 import android.app.Application
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.recyclerview.widget.DividerItemDecoration
 import com.github.luoyemyy.bus.Bus
 import com.github.luoyemyy.bus.BusMsg
 import com.github.luoyemyy.bus.BusResult
 import com.github.luoyemyy.ext.toast
-import com.github.luoyemyy.mvp.recycler.*
 import com.github.luoyemyy.framework.test.MainActivity
 import com.github.luoyemyy.framework.test.R
 import com.github.luoyemyy.framework.test.databinding.ActivityRecyclerBinding
 import com.github.luoyemyy.framework.test.databinding.ActivityRecyclerRecyclerBinding
 import com.github.luoyemyy.framework.test.databinding.ActivityRecyclerStickBinding
 import com.github.luoyemyy.mvp.getPresenter
+import com.github.luoyemyy.mvp.recycler.*
 
 class RecyclerActivity : AppCompatActivity(), BusResult {
 
@@ -47,7 +47,7 @@ class RecyclerActivity : AppCompatActivity(), BusResult {
                 mBinding.stick.name = "${item.type},${item.name}"
             }
         })
-        mBinding.recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        mBinding.recyclerView.addItemDecoration(RecyclerDecoration.middle(this, 1, true).drawDivider(Color.RED))
 
         mPresenter.loadInit()
     }
