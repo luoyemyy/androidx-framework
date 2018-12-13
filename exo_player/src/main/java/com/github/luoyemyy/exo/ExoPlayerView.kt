@@ -1,15 +1,21 @@
 package com.github.luoyemyy.exo
 
 import android.content.Context
+import android.net.Uri
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
 
-class ExoPlayerView constructor(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int) : FrameLayout(context, attributeSet, defStyleAttr), View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+class ExoPlayerView constructor(context: Context, attributeSet: AttributeSet?, defStyleAttr: Int) : PlayerView(context, attributeSet, defStyleAttr), View.OnClickListener, Player.EventListener, SeekBar.OnSeekBarChangeListener {
 
     constructor(context: Context, attributeSet: AttributeSet?) : this(context, attributeSet, 0)
     constructor(context: Context) : this(context, null, 0)
@@ -30,13 +36,11 @@ class ExoPlayerView constructor(context: Context, attributeSet: AttributeSet?, d
     private lateinit var mTxtLength: TextView
     private lateinit var mSeekBar: SeekBar
 
-    private var mControlListener: ControlListener? = null
+
+    private var mExoPlayer: SimpleExoPlayer? = null
+    private var mSource: ExtractorMediaSource? = null
 
     init {
-        initView()
-    }
-
-    private fun initView() {
         LayoutInflater.from(context).inflate(R.layout.exo_player_simple_player_view, this)
         mPlayerLayout = findViewById(R.id.playerLayout)
         mSurfaceView = findViewById(R.id.surfaceView)
@@ -60,6 +64,14 @@ class ExoPlayerView constructor(context: Context, attributeSet: AttributeSet?, d
         mSeekBar.setOnSeekBarChangeListener(this)
     }
 
+    fun setPlayer(exoPlayer: SimpleExoPlayer, url: String) {
+        mExoPlayer = exoPlayer.apply {
+            addListener(this@ExoPlayerView)
+            videoComponent?.setVideoSurfaceView(mSurfaceView)
+        }
+        mSource = ExtractorMediaSource.Factory(DefaultDataSourceFactory(context, Util.getUserAgent(context, context.packageName))).createMediaSource(Uri.parse(url))
+    }
+
 //    fun initPlayer(url: String, player: SimpleExoPlayer) {
 //        val surfaceView = surfaceView
 //        player.addListener(playerListener)
@@ -79,62 +91,62 @@ class ExoPlayerView constructor(context: Context, attributeSet: AttributeSet?, d
 //        player.removeListener(playerListener)
 //        player.videoComponent?.clearVideoSurface()
 //    }
-
-    fun attachToPlayerView(player: SimpleExoPlayer, controlListener: ControlListener) {
-        mControlListener = controlListener
-        player.videoComponent?.apply {
-            setVideoSurfaceView(mSurfaceView)
-        }
-    }
-
-    private fun fullScreen() {
-        mControlListener?.fullScreen()
-    }
-
-    private fun exitFullScreen() {
-        mControlListener?.exitFullScreen()
-    }
-
-    private fun play() {
-        mControlListener?.play()
-    }
-
-    private fun stop() {
-        mControlListener?.stop()
-    }
-
-    private fun seekTo(position: Int) {
-        mControlListener?.seekTo(position)
-    }
-
-    interface ControlListener {
-        fun fullScreen()
-        fun exitFullScreen()
-        fun play()
-        fun stop()
-        fun seekTo(position: Int)
-    }
+//
+//    fun attachToPlayerView(player: SimpleExoPlayer, controlListener: ControlListener) {
+//        mControlListener = controlListener
+//        player.videoComponent?.apply {
+//            setVideoSurfaceView(mSurfaceView)
+//        }
+//    }
+//
+//    private fun fullScreen() {
+//        mControlListener?.fullScreen()
+//    }
+//
+//    private fun exitFullScreen() {
+//        mControlListener?.exitFullScreen()
+//    }
+//
+//    private fun play() {
+//        mControlListener?.play()
+//    }
+//
+//    private fun stop() {
+//        mControlListener?.stop()
+//    }
+//
+//    private fun seekTo(position: Int) {
+//        mControlListener?.seekTo(position)
+//    }
+//
+//    interface ControlListener {
+//        fun fullScreen()
+//        fun exitFullScreen()
+//        fun play()
+//        fun stop()
+//        fun seekTo(position: Int)
+//    }
 
     override fun onClick(v: View?) {
-        when (v) {
-            mImgBack -> {
-                exitFullScreen()
-            }
-            mImgFullscreen -> {
-                fullScreen()
-            }
-            mImgPlay -> {
-                play()
-            }
-            mImgStop -> {
-                stop()
-            }
-        }
+//        when (v) {
+//            mImgBack -> {
+//                exitFullScreen()
+//            }
+//            mImgFullscreen -> {
+//                fullScreen()
+//            }
+//            mImgPlay -> {
+//                play()
+//            }
+//            mImgStop -> {
+//                stop()
+//            }
+//        }
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         if (fromUser) {
-            seekTo(progress)
+//            seekTo(progress)
         }
     }
 

@@ -10,9 +10,39 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
 internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(private var mWrapper: RecyclerAdapterWrapper<T, BIND>, private var mPresenter: RecyclerPresenterSupport<T>) {
+
+    init {
+        /**
+         * 监听当前滑动的位置，并保存下来，用于recreate时，还原到该位置
+         */
+        mWrapper.getRecyclerView().addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val childCount = recyclerView.childCount
+                if (childCount > 0) {
+                    val view = recyclerView.getChildAt(0) ?: return
+                    val position = recyclerView.getChildAdapterPosition(view)
+                    if (position >= 0) {
+                        mPresenter.onScroll(position, view.top)
+                    }
+                }
+            }
+        })
+    }
+
+    fun scrollIfNeed(scrollToPosition: Int, scrollToOffset: Int) {
+        if (scrollToPosition >= 0 && scrollToPosition < getItemCount() - 1) {
+            val layoutManager = mWrapper.getRecyclerView().layoutManager
+            when (layoutManager) {
+                is LinearLayoutManager -> layoutManager.scrollToPositionWithOffset(scrollToPosition, scrollToOffset)
+                is StaggeredGridLayoutManager -> layoutManager.scrollToPositionWithOffset(scrollToPosition, scrollToOffset)
+            }
+        }
+    }
 
     fun onBindViewHolder(holder: VH<BIND>, position: Int) {
         if (isContentByType(mPresenter.getDataSet().type(position))) {

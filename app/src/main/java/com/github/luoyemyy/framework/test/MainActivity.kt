@@ -21,6 +21,7 @@ import com.github.luoyemyy.framework.test.design.DesignActivity
 import com.github.luoyemyy.framework.test.drawer.DrawerActivity
 import com.github.luoyemyy.framework.test.exoplayer.ExoPlayerActivity
 import com.github.luoyemyy.framework.test.mvp.MvpActivity
+import com.github.luoyemyy.framework.test.navigation.NavActivity
 import com.github.luoyemyy.framework.test.picker.PickerImageActivity
 import com.github.luoyemyy.framework.test.recycler.RecyclerActivity
 import com.github.luoyemyy.framework.test.status.StatusActivity
@@ -98,6 +99,7 @@ class MainActivity : AppCompatActivity(), BusResult {
                 }
                 12 -> startActivity(Intent(this@MainActivity, DesignActivity::class.java))
                 13 -> startActivity(Intent(this@MainActivity, DebugActivity::class.java))
+                15 -> startActivity(Intent(this@MainActivity, NavActivity::class.java))
                 14 -> {
                     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
                     intent.type = "image/*"
@@ -130,7 +132,8 @@ class MainActivity : AppCompatActivity(), BusResult {
                     Action(11, "分享"),
                     Action(12, "design"),
                     Action(13, "debug"),
-                    Action(14, "picker")
+                    Action(14, "picker"),
+                    Action(15, "nav")
             )
         }
     }

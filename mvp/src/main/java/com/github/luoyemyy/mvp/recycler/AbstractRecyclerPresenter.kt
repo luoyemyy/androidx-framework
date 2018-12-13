@@ -9,13 +9,12 @@ import androidx.lifecycle.LifecycleOwner
 
 abstract class AbstractRecyclerPresenter<T>(app: Application) : AndroidViewModel(app), RecyclerPresenterSupport<T>, RecyclerPresenterWrapper<T> {
 
-    private lateinit var mDelegate: RecyclerPresenterDelegate<T>
+    private val mDelegate: RecyclerPresenterDelegate<T> = RecyclerPresenterDelegate()
 
     fun setup(owner: LifecycleOwner, adapter: RecyclerAdapterSupport<T>) {
-        mDelegate = adapter.let {
-            it.setup(this)
-            RecyclerPresenterDelegate(owner, adapter, this)
-        }
+        adapter.setup(this)
+        mDelegate.setPresenterWrapper(this)
+        mDelegate.setAdapterSupport(owner, adapter)
     }
 
     override fun getPaging(): Paging {
@@ -28,6 +27,14 @@ abstract class AbstractRecyclerPresenter<T>(app: Application) : AndroidViewModel
 
     override fun getAdapterSupport(): RecyclerAdapterSupport<*>? {
         return mDelegate.getAdapterSupport()
+    }
+
+    override fun onScroll(position: Int, offset: Int) {
+        return mDelegate.onScroll(position, offset)
+    }
+
+    override fun reload() {
+        mDelegate.reload()
     }
 
     override fun loadInit(bundle: Bundle?) {

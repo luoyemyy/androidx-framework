@@ -3,7 +3,9 @@ package com.github.luoyemyy.framework.test.recycler
 import android.app.Application
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -44,12 +46,20 @@ class RecyclerActivity : AppCompatActivity(), BusResult {
 
             override fun setStickViewContent(position: Int) {
                 val item = mPresenter.getDataSet().item(position) as? Item ?: return
+                Log.e("RecyclerActivity", "setStickViewContent:  ${item.type},${item.name}")
+                Log.e("RecyclerActivity", "visible: ${mBinding.stick.root.visibility == View.VISIBLE}")
+                Log.e("RecyclerActivity", "height: ${mBinding.stick.root.height}")
+                Log.e("RecyclerActivity", "width: ${mBinding.stick.root.width}")
                 mBinding.stick.name = "${item.type},${item.name}"
             }
         })
-        mBinding.recyclerView.addItemDecoration(RecyclerDecoration.middle(this, 1, true).drawDivider(Color.RED))
+        mBinding.recyclerView.addItemDecoration(RecyclerDecoration.middle(this, 10, true).drawDivider(Color.RED))
 
-        mPresenter.loadInit()
+        if (savedInstanceState != null) {
+            mPresenter.reload()
+        } else {
+            mPresenter.loadInit()
+        }
     }
 
     override fun busResult(event: String, msg: BusMsg) {

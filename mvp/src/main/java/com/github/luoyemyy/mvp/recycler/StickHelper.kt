@@ -1,5 +1,6 @@
 package com.github.luoyemyy.mvp.recycler
 
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
@@ -112,8 +113,6 @@ class StickHelper private constructor(private val mStickView: View, private val 
             }
         }
     }
-
-    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {}
 
     interface Callback {
         fun isStick(position: Int): Boolean

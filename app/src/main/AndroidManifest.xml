@@ -33,6 +33,7 @@
         <activity android:name=".exoplayer.ExoPlayerActivity" />
         <activity android:name=".design.DesignActivity" />
         <activity android:name=".picker.PickerImageActivity" />
+        <activity android:name=".navigation.NavActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

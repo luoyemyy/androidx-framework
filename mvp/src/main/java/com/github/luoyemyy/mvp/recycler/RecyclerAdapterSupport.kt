@@ -9,7 +9,7 @@ interface RecyclerAdapterSupport<T> : LoadCallback<T> {
 
     fun getAdapter(): RecyclerView.Adapter<*>
 
-    fun attachToRecyclerView()
+    fun attachToRecyclerView(scrollToPosition: Int, scrollToOffset: Int)
 
     /**
      * 设置刷新控件样式

@@ -1,33 +1,40 @@
 package com.github.luoyemyy.mvp.recycler
 
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.*
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapterSupport<T>, private val mPresenterWrapper: RecyclerPresenterWrapper<T>) : LifecycleObserver {
+class RecyclerPresenterDelegate<T> : LifecycleObserver {
 
+    private var mPresenterWrapper: RecyclerPresenterWrapper<T>? = null
     private val mDataSet by lazy { DataSet<T>() }
     private var mPaging: Paging = Paging.Page()
     private var mAdapterSupport: RecyclerAdapterSupport<T>? = null
     private val mLiveDataRefreshState = MutableLiveData<Boolean>()
     private var mDisposable: Disposable? = null
+    private var mScrollPosition: Int = -1
+    private var mScrollOffset: Int = -1
 
-    init {
+    internal fun setPresenterWrapper(presenterWrapper: RecyclerPresenterWrapper<T>) {
+        mPresenterWrapper = presenterWrapper
+    }
 
-        owner.lifecycle.addObserver(this)
+    internal fun setAdapterSupport(owner: LifecycleOwner, adapter: RecyclerAdapterSupport<T>) {
 
-        adapter.apply {
-            mAdapterSupport = this
+        mAdapterSupport = adapter.apply {
             mDataSet.enableEmpty = enableEmpty()
             mDataSet.enableMore = enableLoadMore()
             mDataSet.moreEndGone = loadMoreEndGone()
-            mLiveDataRefreshState.observe(owner, Observer {
-                setRefreshState(it ?: false)
-            })
         }
+
+        owner.lifecycle.addObserver(this)
+        mLiveDataRefreshState.observe(owner, Observer<Boolean> {
+            mAdapterSupport?.setRefreshState(it ?: false)
+        })
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -40,6 +47,8 @@ class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapt
         mDisposable = null
         mAdapterSupport = null
         source?.lifecycle?.removeObserver(this)
+
+        Log.i(this::class.java.simpleName, "onDestroy:")
     }
 
     fun getDataSet(): DataSet<T> {
@@ -58,8 +67,17 @@ class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapt
         return mAdapterSupport
     }
 
+    fun onScroll(position: Int, offset: Int) {
+        mScrollPosition = position
+        mScrollOffset = offset
+    }
+
+    fun reload() {
+        mAdapterSupport?.attachToRecyclerView(mScrollPosition, mScrollOffset)
+    }
+
     private fun beforeLoadInit(bundle: Bundle?) {
-        mPresenterWrapper.beforeLoadInit(bundle)
+        mPresenterWrapper?.beforeLoadInit(bundle)
         mAdapterSupport?.apply {
             beforeLoadInit(bundle)
             mPaging.reset()
@@ -73,17 +91,17 @@ class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapt
     }
 
     private fun afterLoadInit(list: List<T>?) {
-        mPresenterWrapper.afterLoadInit(list)
+        mPresenterWrapper?.afterLoadInit(list)
         mAdapterSupport?.apply {
             mDataSet.initData(list, getAdapter())
-            attachToRecyclerView()
+            attachToRecyclerView(mScrollPosition, mScrollOffset)
             afterLoadInit(list)
             mLiveDataRefreshState.value = false
         }
     }
 
     private fun beforeLoadRefresh() {
-        mPresenterWrapper.beforeLoadRefresh()
+        mPresenterWrapper?.beforeLoadRefresh()
         mAdapterSupport?.apply {
             beforeLoadRefresh()
             mPaging.reset()
@@ -96,7 +114,7 @@ class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapt
     }
 
     private fun afterLoadRefresh(list: List<T>?) {
-        mPresenterWrapper.afterLoadRefresh(list)
+        mPresenterWrapper?.afterLoadRefresh(list)
         mAdapterSupport?.apply {
             mDataSet.setData(list, getAdapter())
             afterLoadRefresh(list)
@@ -105,7 +123,7 @@ class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapt
     }
 
     private fun beforeLoadMore() {
-        mPresenterWrapper.beforeLoadMore()
+        mPresenterWrapper?.beforeLoadMore()
         mAdapterSupport?.apply {
             beforeLoadMore()
             mPaging.next()
@@ -122,7 +140,7 @@ class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapt
     }
 
     private fun afterLoadMore(list: List<T>?) {
-        mPresenterWrapper.afterLoadMore(list)
+        mPresenterWrapper?.afterLoadMore(list)
         mAdapterSupport?.apply {
             mDataSet.addData(list, getAdapter())
             afterLoadMore(list)
@@ -130,7 +148,7 @@ class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapt
     }
 
     private fun beforeLoadSearch(search: String) {
-        mPresenterWrapper.beforeLoadSearch(search)
+        mPresenterWrapper?.beforeLoadSearch(search)
         mAdapterSupport?.apply {
             beforeLoadSearch(search)
             mPaging.reset()
@@ -144,7 +162,7 @@ class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapt
     }
 
     private fun afterLoadSearch(list: List<T>?) {
-        mPresenterWrapper.afterLoadSearch(list)
+        mPresenterWrapper?.afterLoadSearch(list)
         mAdapterSupport?.apply {
             mDataSet.setData(list, getAdapter())
             afterLoadSearch(list)
@@ -153,7 +171,8 @@ class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapt
     }
 
     private fun loadData(loadType: LoadType, bundle: Bundle? = null, search: String? = null) {
-        val r = mPresenterWrapper.loadData(loadType, mPaging, bundle, search) { ok, value ->
+        val wrapper = mPresenterWrapper ?: return
+        val r = wrapper.loadData(loadType, mPaging, bundle, search) { ok, value ->
             if (ok) {
                 loadAfter(loadType, value)
             } else {
@@ -166,7 +185,8 @@ class RecyclerPresenterDelegate<T>(owner: LifecycleOwner, adapter: RecyclerAdapt
             }
             mDisposable = Single
                     .create<List<T>> {
-                        it.onSuccess(mPresenterWrapper.loadData(loadType, mPaging, bundle, search) ?: listOf())
+                        it.onSuccess(wrapper.loadData(loadType, mPaging, bundle, search)
+                                ?: listOf())
                     }
                     .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ loadAfter(loadType, it) }, { loadAfterError(loadType) })

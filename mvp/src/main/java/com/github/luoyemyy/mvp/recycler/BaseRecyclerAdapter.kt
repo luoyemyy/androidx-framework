@@ -9,48 +9,52 @@ abstract class BaseRecyclerAdapter<T, BIND : ViewDataBinding>(private var mRecyc
     /**
      * 辅助类
      */
-    private lateinit var delegate: RecyclerAdapterDelegate<T, BIND>
+    private lateinit var mDelegate: RecyclerAdapterDelegate<T, BIND>
 
     override fun setup(presenterSupport: RecyclerPresenterSupport<T>) {
-        delegate = RecyclerAdapterDelegate(this, presenterSupport)
+        mDelegate = RecyclerAdapterDelegate(this, presenterSupport)
     }
 
     /**
      * 获得指定项内容实体
      */
     override fun getItem(position: Int): T? {
-        return delegate.getItem(position)
+        return mDelegate.getItem(position)
     }
 
     override fun getAdapter(): RecyclerView.Adapter<*> {
         return this
     }
 
-    override fun attachToRecyclerView() {
+    /**
+     * 将adapter设置到recyclerView并滑动到指定的位置
+     */
+    override fun attachToRecyclerView(scrollToPosition: Int, scrollToOffset: Int) {
         mRecyclerView.adapter = this
+        mDelegate.scrollIfNeed(scrollToPosition, scrollToOffset)
     }
 
     override fun onBindViewHolder(holder: VH<BIND>, position: Int) {
-        delegate.onBindViewHolder(holder, position)
+        mDelegate.onBindViewHolder(holder, position)
     }
 
     override fun onBindViewHolder(holder: VH<BIND>, position: Int, payloads: MutableList<Any>) {
-        delegate.onBindViewHolder(holder, position, payloads)
+        mDelegate.onBindViewHolder(holder, position, payloads)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH<BIND> {
-        return delegate.onCreateViewHolder(parent, viewType)
+        return mDelegate.onCreateViewHolder(parent, viewType)
     }
 
     /**
      * @return 如果没有匹配的类型则返回0 内容视图的类型必须大于0
      */
     override fun getItemViewType(position: Int): Int {
-        return delegate.getItemViewType(position)
+        return mDelegate.getItemViewType(position)
     }
 
     override fun getItemCount(): Int {
-        return delegate.getItemCount()
+        return mDelegate.getItemCount()
     }
 
     override fun getRecyclerView(): RecyclerView {
