@@ -43,14 +43,14 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         mLiveDataRefreshState.observe(owner, Observer<Boolean> {
             val i = System.currentTimeMillis() - mLastRefreshMills
             Log.e("LifecycleObserver", "$i")
-            if (i > 1000) {
+            if (i > 1732) {
                 mAdapterSupport?.setRefreshState(it ?: false)
                 mLastRefreshMills = System.currentTimeMillis()
             } else {
                 Handler(Looper.getMainLooper()).postDelayed({
                     mAdapterSupport?.setRefreshState(it ?: false)
                     mLastRefreshMills = System.currentTimeMillis()
-                }, 1000 - i)
+                }, 1732 - i)
             }
         })
     }
