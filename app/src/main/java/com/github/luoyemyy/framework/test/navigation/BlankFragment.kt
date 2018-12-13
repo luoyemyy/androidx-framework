@@ -12,6 +12,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.github.luoyemyy.framework.test.R
 import com.github.luoyemyy.framework.test.databinding.FragmentBlankBinding
 import com.github.luoyemyy.framework.test.databinding.FragmentBlankRecyclerBinding
+import com.github.luoyemyy.mvp.getPresenter
 import com.github.luoyemyy.mvp.getRecyclerPresenter
 import com.github.luoyemyy.mvp.recycler.*
 
@@ -32,8 +33,10 @@ class BlankFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.e("BlankFragment", "onViewCreated:  ")
+        mBinding.recyclerView.setLinearManager()
+        val reload = savedInstanceState != null || this::mPresenter.isInitialized
         mPresenter = getRecyclerPresenter(this, Adapter())
-
+        mPresenter.loadInit(reload,arguments)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

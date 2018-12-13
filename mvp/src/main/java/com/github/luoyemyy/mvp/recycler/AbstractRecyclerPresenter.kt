@@ -33,12 +33,8 @@ abstract class AbstractRecyclerPresenter<T>(app: Application) : AndroidViewModel
         return mDelegate.onScroll(position, offset)
     }
 
-    override fun reload() {
-        mDelegate.reload()
-    }
-
-    override fun loadInit(bundle: Bundle?) {
-        mDelegate.loadInit(bundle)
+    override fun loadInit(reload: Boolean, bundle: Bundle?) {
+        mDelegate.loadInit(reload, bundle)
     }
 
     override fun loadRefresh() {

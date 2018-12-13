@@ -26,15 +26,12 @@ interface RecyclerPresenterSupport<T> {
     fun onScroll(position: Int, offset: Int)
 
     /**
-     * 重新展示列表，用于recreate
-     */
-    fun reload()
-
-    /**
      * 初始化第一页数据，并展示
+     * @param reload
+     * @param bundle
      */
     @MainThread
-    fun loadInit(bundle: Bundle? = null)
+    fun loadInit(reload: Boolean = false, bundle: Bundle? = null)
 
     /**
      * 刷新数据，并展示

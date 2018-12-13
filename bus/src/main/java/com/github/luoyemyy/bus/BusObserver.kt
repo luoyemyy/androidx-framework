@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER", "unused")
+
 package com.github.luoyemyy.bus
 
 import androidx.lifecycle.Lifecycle

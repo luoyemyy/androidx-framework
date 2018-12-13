@@ -57,7 +57,7 @@ class AlbumActivity : AppCompatActivity() {
 
         mAlbumPresenter.liveDataInit.observe(this, Observer {
             mBucketPresenter.buckets = mAlbumPresenter.buckets
-            mBucketPresenter.loadInit()
+            mBucketPresenter.loadInit(false)
         })
         mAlbumPresenter.liveDataMenu.observe(this, Observer {
             invalidateOptionsMenu()
@@ -80,7 +80,7 @@ class AlbumActivity : AppCompatActivity() {
             showBucket()
         }
 
-        mAlbumPresenter.loadInit()
+        mAlbumPresenter.loadInit(savedInstanceState != null)
     }
 
     private fun showBucket() {

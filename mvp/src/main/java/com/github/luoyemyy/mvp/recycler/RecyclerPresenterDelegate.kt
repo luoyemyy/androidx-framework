@@ -1,6 +1,9 @@
 package com.github.luoyemyy.mvp.recycler
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.*
 import io.reactivex.Single
@@ -18,23 +21,37 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
     private var mDisposable: Disposable? = null
     private var mScrollPosition: Int = -1
     private var mScrollOffset: Int = -1
+    private var mLastRefreshMills: Long = 0
 
     internal fun setPresenterWrapper(presenterWrapper: RecyclerPresenterWrapper<T>) {
         mPresenterWrapper = presenterWrapper
     }
 
     internal fun setAdapterSupport(owner: LifecycleOwner, adapter: RecyclerAdapterSupport<T>) {
-
-        mAdapterSupport = adapter.apply {
-            mDataSet.enableEmpty = enableEmpty()
-            mDataSet.enableMore = enableLoadMore()
-            mDataSet.moreEndGone = loadMoreEndGone()
+        if (mAdapterSupport == null) {
+            adapter.apply {
+                mDataSet.enableEmpty = enableEmpty()
+                mDataSet.enableMore = enableLoadMore()
+                mDataSet.moreEndGone = loadMoreEndGone()
+            }
+        } else {
+            mLiveDataRefreshState.removeObservers(owner)
         }
+        mAdapterSupport = adapter
 
         owner.lifecycle.addObserver(this)
-        mLiveDataRefreshState.removeObservers(owner)
         mLiveDataRefreshState.observe(owner, Observer<Boolean> {
-            mAdapterSupport?.setRefreshState(it ?: false)
+            val i = System.currentTimeMillis() - mLastRefreshMills
+            Log.e("LifecycleObserver", "$i")
+            if (i > 1000) {
+                mAdapterSupport?.setRefreshState(it ?: false)
+                mLastRefreshMills = System.currentTimeMillis()
+            } else {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    mAdapterSupport?.setRefreshState(it ?: false)
+                    mLastRefreshMills = System.currentTimeMillis()
+                }, 1000 - i)
+            }
         })
     }
 
@@ -49,7 +66,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         mAdapterSupport = null
         source?.lifecycle?.removeObserver(this)
 
-        Log.i(this::class.java.simpleName, "onDestroy:")
+        Log.e(this::class.java.simpleName, "onDestroy:")
     }
 
     fun getDataSet(): DataSet<T> {
@@ -73,10 +90,6 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         mScrollOffset = offset
     }
 
-    fun reload() {
-        mAdapterSupport?.attachToRecyclerView(mScrollPosition, mScrollOffset)
-    }
-
     private fun beforeLoadInit(bundle: Bundle?) {
         mPresenterWrapper?.beforeLoadInit(bundle)
         mAdapterSupport?.apply {
@@ -86,9 +99,13 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         }
     }
 
-    fun loadInit(bundle: Bundle?) {
-        beforeLoadInit(bundle)
-        loadData(LoadType.init(), bundle)
+    fun loadInit(reload: Boolean, bundle: Bundle?) {
+        if (reload) {
+            mAdapterSupport?.attachToRecyclerView(mScrollPosition, mScrollOffset)
+        } else {
+            beforeLoadInit(bundle)
+            loadData(LoadType.init(), bundle)
+        }
     }
 
     private fun afterLoadInit(list: List<T>?) {
