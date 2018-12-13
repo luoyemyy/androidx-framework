@@ -32,6 +32,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         }
 
         owner.lifecycle.addObserver(this)
+        mLiveDataRefreshState.removeObservers(owner)
         mLiveDataRefreshState.observe(owner, Observer<Boolean> {
             mAdapterSupport?.setRefreshState(it ?: false)
         })
