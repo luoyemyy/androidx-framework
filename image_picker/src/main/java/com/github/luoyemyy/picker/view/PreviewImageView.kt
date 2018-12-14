@@ -38,7 +38,10 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         mMatrix.reset()
         mChange = false
         scaleType = ScaleType.CENTER_INSIDE
+        imageMatrix.reset()
         super.setImageDrawable(drawable)
+
+        Log.e("PreviewImageView", "setImageDrawable:  ${scaleType.name}")
     }
 
     /**
@@ -155,7 +158,6 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
     inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
 
         override fun onDown(e: MotionEvent?): Boolean {
-            Log.e("GestureListener", "onDown:  ")
             initMatrixType()
             mChange = false
             return false
@@ -179,11 +181,6 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
             return super.onSingleTapConfirmed(e)
         }
 
-        override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
-            Log.e("GestureListener", "onFling:  $velocityX")
-            Log.e("GestureListener", "onFling:  $velocityY")
-            return super.onFling(e1, e2, velocityX, velocityY)
-        }
     }
 
 }

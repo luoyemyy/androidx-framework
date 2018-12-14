@@ -20,7 +20,12 @@ class CropPresenter(var app: Application) : AbstractRecyclerPresenter<CropImage>
     val liveDataSingleImage = MutableLiveData<Boolean>()
     private var mImages = mutableListOf<CropImage>()
 
-    fun startCrop(bundle: Bundle?) {
+    fun startCrop(reload: Boolean, bundle: Bundle?) {
+        if (reload) {
+            loadInit(true, null)
+            liveDataCropImage.postValue(liveDataCropImage.value)
+            return
+        }
         bundle?.getString("images")?.toList<String>()?.forEachIndexed { index, it ->
             mImages.add(CropImage(it, it, index, false))
         }

@@ -76,14 +76,6 @@ class ImagePicker private constructor() {
         }
 
         /**
-         * @param portrait true 竖屏（默认) ；false 横屏
-         */
-        fun portrait(portrait: Boolean): Builder {
-            mOption.portrait = portrait
-            return this
-        }
-
-        /**
          * 按照固定尺寸计算裁剪区域，不超过imageView的大小
          * @param size cropSize > 0
          * @param ratio  cropRatio > 0

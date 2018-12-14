@@ -1,6 +1,5 @@
 package com.github.luoyemyy.picker.preview
 
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Handler
 import android.transition.Slide
@@ -24,7 +23,6 @@ class PreviewActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_BEHIND
         mBinding = DataBindingUtil.setContentView(this, R.layout.image_picker_preview)
         mPresenter = getPresenter()
 

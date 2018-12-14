@@ -52,7 +52,6 @@ class AlbumActivity : AppCompatActivity() {
             setTitle(R.string.image_picker_album_title)
             setDisplayHomeAsUpEnabled(true)
         }
-        requestedOrientation = if (ImagePicker.option.portrait) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         mAlbumPresenter.setMenu()
 
         mAlbumPresenter.liveDataInit.observe(this, Observer {

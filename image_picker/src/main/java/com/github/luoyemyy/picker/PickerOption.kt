@@ -6,7 +6,6 @@ class PickerOption(var fileProvider: String) {
 
     var minSelect: Int = 1
     var maxSelect: Int = 1
-    var portrait: Boolean = true        //true 锁定垂直布局 false 锁定横向布局
 
     var cropType: Int = 0               // 0 不裁剪 1 按尺寸 2 按比例
     var cropRequire: Boolean = true    // 是否必须裁剪

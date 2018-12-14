@@ -1,7 +1,6 @@
 package com.github.luoyemyy.picker.crop
 
 import android.content.Context
-import android.content.pm.ActivityInfo
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.*
@@ -27,7 +26,6 @@ class CropActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_BEHIND
         mBinding = DataBindingUtil.setContentView(this, R.layout.image_picker_crop)
         mPresenter = getRecyclerPresenter(this, Adapter())
 
@@ -50,7 +48,8 @@ class CropActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             addItemDecoration(Decoration(context))
         }
-        mPresenter.startCrop(intent.extras)
+
+        mPresenter.startCrop(savedInstanceState != null, intent.extras)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
