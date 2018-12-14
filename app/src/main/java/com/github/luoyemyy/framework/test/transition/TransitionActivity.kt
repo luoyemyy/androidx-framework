@@ -14,7 +14,7 @@ class TransitionActivity : AppCompatActivity() {
             id = R.id.container
         }, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
-        supportFragmentManager.beginTransaction().add(R.id.container, TransitionFragment1()).commit()
+        supportFragmentManager.beginTransaction().add(R.id.container, TransitionFragment2()).commit()
 
     }
 

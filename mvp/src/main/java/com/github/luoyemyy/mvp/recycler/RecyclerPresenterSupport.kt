@@ -27,8 +27,8 @@ interface RecyclerPresenterSupport<T> {
 
     /**
      * 初始化第一页数据，并展示
-     * @param reload
-     * @param bundle
+     * @param reload    true 重新展示数据，不拉取数据 false 第一次拉取数据
+     * @param bundle    reload==false 时，初始化参数
      */
     @MainThread
     fun loadInit(reload: Boolean = false, bundle: Bundle? = null)
