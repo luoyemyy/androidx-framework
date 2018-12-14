@@ -1,6 +1,5 @@
 package com.github.luoyemyy.mvp.recycler
 
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
@@ -47,6 +46,7 @@ class StickHelper private constructor(private val mStickView: View, private val 
 
     companion object {
         fun attachToRecyclerView(recyclerView: RecyclerView, stickView: View, callback: Callback) {
+            stickView.visibility = View.INVISIBLE
             recyclerView.addOnScrollListener(StickHelper(stickView, callback))
         }
     }

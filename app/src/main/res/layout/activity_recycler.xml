@@ -38,6 +38,7 @@
 
             <include
                 android:id="@+id/stick"
+                android:visibility="invisible"
                 layout="@layout/activity_recycler_stick" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

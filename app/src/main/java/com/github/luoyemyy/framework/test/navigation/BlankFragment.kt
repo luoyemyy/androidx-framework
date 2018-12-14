@@ -12,7 +12,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.github.luoyemyy.framework.test.R
 import com.github.luoyemyy.framework.test.databinding.FragmentBlankBinding
 import com.github.luoyemyy.framework.test.databinding.FragmentBlankRecyclerBinding
-import com.github.luoyemyy.mvp.getPresenter
 import com.github.luoyemyy.mvp.getRecyclerPresenter
 import com.github.luoyemyy.mvp.recycler.*
 

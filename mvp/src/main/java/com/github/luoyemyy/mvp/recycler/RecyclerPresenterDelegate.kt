@@ -3,7 +3,6 @@ package com.github.luoyemyy.mvp.recycler
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.*
 import io.reactivex.Single
@@ -21,7 +20,12 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
     private var mDisposable: Disposable? = null
     private var mScrollPosition: Int = -1
     private var mScrollOffset: Int = -1
-    private var mLastRefreshMills: Long = 0
+    private var mRefreshStartMills: Long = 0
+    private val mWaitTime: Long = 600
+    private val mHandler = Handler(Looper.getMainLooper())
+    private val mRefreshEndCallback = {
+        mLiveDataRefreshState.value = false
+    }
 
     internal fun setPresenterWrapper(presenterWrapper: RecyclerPresenterWrapper<T>) {
         mPresenterWrapper = presenterWrapper
@@ -41,17 +45,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
 
         owner.lifecycle.addObserver(this)
         mLiveDataRefreshState.observe(owner, Observer<Boolean> {
-            val i = System.currentTimeMillis() - mLastRefreshMills
-            Log.e("LifecycleObserver", "$i")
-            if (i > 1732) {
-                mAdapterSupport?.setRefreshState(it ?: false)
-                mLastRefreshMills = System.currentTimeMillis()
-            } else {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    mAdapterSupport?.setRefreshState(it ?: false)
-                    mLastRefreshMills = System.currentTimeMillis()
-                }, 1732 - i)
-            }
+            mAdapterSupport?.setRefreshState(it ?: false)
         })
     }
 
@@ -90,12 +84,27 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         mScrollOffset = offset
     }
 
+    private fun startRefresh() {
+        mHandler.removeCallbacks(mRefreshEndCallback)
+        mRefreshStartMills = System.currentTimeMillis()
+        mLiveDataRefreshState.value = true
+    }
+
+    private fun endRefresh() {
+        val i = System.currentTimeMillis() - mRefreshStartMills
+        if (i > mWaitTime) {
+            mLiveDataRefreshState.value = false
+        } else {
+            mHandler.postDelayed(mRefreshEndCallback, mWaitTime - i)
+        }
+    }
+
     private fun beforeLoadInit(bundle: Bundle?) {
         mPresenterWrapper?.beforeLoadInit(bundle)
         mAdapterSupport?.apply {
             beforeLoadInit(bundle)
             mPaging.reset()
-            mLiveDataRefreshState.value = true
+            startRefresh()
         }
     }
 
@@ -114,7 +123,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
             mDataSet.initData(list, getAdapter())
             attachToRecyclerView(mScrollPosition, mScrollOffset)
             afterLoadInit(list)
-            mLiveDataRefreshState.value = false
+            endRefresh()
         }
     }
 
@@ -123,6 +132,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         mAdapterSupport?.apply {
             beforeLoadRefresh()
             mPaging.reset()
+            startRefresh()
         }
     }
 
@@ -136,7 +146,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         mAdapterSupport?.apply {
             mDataSet.setData(list, getAdapter())
             afterLoadRefresh(list)
-            mLiveDataRefreshState.value = false
+            endRefresh()
         }
     }
 
@@ -170,7 +180,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         mAdapterSupport?.apply {
             beforeLoadSearch(search)
             mPaging.reset()
-            mLiveDataRefreshState.value = true
+            startRefresh()
         }
     }
 
@@ -184,7 +194,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         mAdapterSupport?.apply {
             mDataSet.setData(list, getAdapter())
             afterLoadSearch(list)
-            mLiveDataRefreshState.value = false
+            endRefresh()
         }
     }
 
