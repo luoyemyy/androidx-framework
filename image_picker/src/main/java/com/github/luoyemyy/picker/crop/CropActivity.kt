@@ -71,8 +71,6 @@ class CropActivity : AppCompatActivity() {
                 mBinding.imgPreview.crop {
                     ImagePickerHelper.saveBitmap(it) { ok, path ->
                         if (ok && path != null) {
-                            val bm = BitmapFactory.decodeFile(path)
-                            Log.e("CropImageView", "w:${bm.width} h:${bm.height}")
                             mPresenter.crop(path)
                         }
                     }

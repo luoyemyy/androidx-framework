@@ -213,7 +213,7 @@ class CropImageView(context: Context, attributeSet: AttributeSet?, defStyleAttr:
                 }
 
                 cropBitmap = Bitmap.createBitmap(bitmap, x, y, w, h, matrix, false)
-                Log.e("CropImageView", "crop:  裁剪图片宽度 ${cropBitmap.width} 高度 ${cropBitmap.height}")
+//                Log.e("CropImageView", "crop:  裁剪图片宽度 ${cropBitmap.width} 高度 ${cropBitmap.height}")
             } catch (e: Throwable) {
                 Log.e("CropImageView", "crop:  ", e)
                 handler.post {

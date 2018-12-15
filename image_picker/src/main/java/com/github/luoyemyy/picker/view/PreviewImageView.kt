@@ -31,8 +31,6 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
             if (mVWidth == 0 && mVHeight == 0) {
                 mVWidth = width
                 mVHeight = height
-                Log.e("setImageDrawable", "$width")
-                Log.e("setImageDrawable", "$height")
             }
         }
     }
