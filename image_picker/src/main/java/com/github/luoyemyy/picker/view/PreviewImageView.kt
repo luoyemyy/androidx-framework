@@ -17,13 +17,25 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
     constructor(context: Context, attributeSet: AttributeSet?) : this(context, attributeSet, 0, 0)
     constructor(context: Context) : this(context, null, 0, 0)
 
-    private var mMatrix = matrix
-    private var mResetMatrix = matrix
-    private var mInitMatrixType = false
+    private var mMatrix = Matrix()
+    private var mResetMatrix = Matrix()
     private var mImageViewListeners = mutableListOf<ImageViewListener>()
     private val mScaleGestureDetector = ScaleGestureDetector(context, ScaleGestureListener())
     private val mGestureDetector = GestureDetector(context, GestureListener())
     private var mChange = false
+    private var mVWidth: Int = 0
+    private var mVHeight: Int = 0
+
+    init {
+        viewTreeObserver.addOnGlobalLayoutListener {
+            if (mVWidth == 0 && mVHeight == 0) {
+                mVWidth = width
+                mVHeight = height
+                Log.e("setImageDrawable", "$width")
+                Log.e("setImageDrawable", "$height")
+            }
+        }
+    }
 
     fun addImageViewListener(listener: ImageViewListener) {
         mImageViewListeners.add(listener)
@@ -33,26 +45,31 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
      * 设置图片时，设置当前的scaleType
      */
     override fun setImageDrawable(drawable: Drawable?) {
-        mInitMatrixType = false
-        mResetMatrix.reset()
-        mMatrix.reset()
         mChange = false
-        scaleType = ScaleType.CENTER_INSIDE
-        imageMatrix.reset()
-        super.setImageDrawable(drawable)
+        val dWidth = drawable?.intrinsicWidth ?: 0
+        val dHeight = drawable?.intrinsicHeight ?: 0
+        if (dWidth != 0 && dHeight != 0) {
+            val vWidth = mVWidth
+            val vHeight = mVHeight
 
-        Log.e("PreviewImageView", "setImageDrawable:  ${scaleType.name}")
-    }
+            mMatrix.reset()
 
-    /**
-     * 设置matrix，并记录最初的matrix（以便可以重置当前图片)
-     */
-    fun initMatrixType() {
-        if (!mInitMatrixType) {
-            mInitMatrixType = true
-            mMatrix.set(imageMatrix)
-            mResetMatrix = Matrix(imageMatrix)
+            val scale = if (dWidth <= vWidth && dHeight <= vHeight) {
+                1.0f
+            } else {
+                Math.min(vWidth.toFloat() / dWidth.toFloat(), vHeight.toFloat() / dHeight.toFloat())
+            }
+
+            val dx = Math.round((vWidth - dWidth * scale) * 0.5f).toFloat()
+            val dy = Math.round((vHeight - dHeight * scale) * 0.5f).toFloat()
+
+            mMatrix.postScale(scale, scale)
+            mMatrix.postTranslate(dx, dy)
+
+            mResetMatrix.set(mMatrix)
             scaleType = ScaleType.MATRIX
+            imageMatrix = mMatrix
+            super.setImageDrawable(drawable)
         }
     }
 
@@ -158,7 +175,6 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
     inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
 
         override fun onDown(e: MotionEvent?): Boolean {
-            initMatrixType()
             mChange = false
             return false
         }

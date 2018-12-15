@@ -29,7 +29,6 @@
             android:contentDescription="@null"
             app:layout_constraintBottom_toTopOf="@id/recyclerView"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:scaleType="centerInside"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/appBarLayout" />
 

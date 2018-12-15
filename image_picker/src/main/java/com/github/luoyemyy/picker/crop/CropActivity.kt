@@ -1,8 +1,10 @@
 package com.github.luoyemyy.picker.crop
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -37,7 +39,7 @@ class CropActivity : AppCompatActivity() {
 
         mPresenter.liveDataCropImage.observe(this, Observer {
             if (it != null) {
-                ImagePickerHelper.imagePicker(mBinding.imgPreview, it.cropPath)
+                ImagePickerHelper.imagePickerCenterInside(mBinding.imgPreview, it.cropPath)
             }
         })
         mPresenter.liveDataSingleImage.observe(this, Observer {
@@ -69,6 +71,8 @@ class CropActivity : AppCompatActivity() {
                 mBinding.imgPreview.crop {
                     ImagePickerHelper.saveBitmap(it) { ok, path ->
                         if (ok && path != null) {
+                            val bm = BitmapFactory.decodeFile(path)
+                            Log.e("CropImageView", "w:${bm.width} h:${bm.height}")
                             mPresenter.crop(path)
                         }
                     }
