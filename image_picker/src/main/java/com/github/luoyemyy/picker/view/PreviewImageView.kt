@@ -46,7 +46,7 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         mChange = false
         val dWidth = drawable?.intrinsicWidth ?: 0
         val dHeight = drawable?.intrinsicHeight ?: 0
-        if (dWidth != 0 && dHeight != 0) {
+        if (dWidth > 0 && dHeight > 0) {
             val vWidth = mVWidth
             val vHeight = mVHeight
 

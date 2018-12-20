@@ -94,6 +94,10 @@ class RecyclerActivity : AppCompatActivity(), BusResult {
         override fun setRefreshState(refreshing: Boolean) {
             mBinding.swipeRefreshLayout.isRefreshing = refreshing
         }
+
+        override fun onItemClickListener(vh: VH<ViewDataBinding>, view: View?) {
+            TestDialogFragment().show(supportFragmentManager, "1111")
+        }
     }
 
     data class Item(val type: Int, var name: String)

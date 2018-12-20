@@ -19,10 +19,9 @@ class MvpActivity : AppCompatActivity(), BusResult {
         super.onCreate(savedInstanceState)
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_mvp)
 
-        val presenter = getPresenter<MvpPresenter>()
 
         mBinding.setLifecycleOwner(this)
-        mBinding.presenter = presenter
+        mBinding.presenter = getPresenter()
 
         mBinding.presenter?.load()
 

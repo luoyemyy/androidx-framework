@@ -31,6 +31,23 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(private var mW
                     }
                 }
             }
+
+//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                    val count = recyclerView.childCount
+//                    val itemCount = recyclerView.adapter?.itemCount ?: -1
+//                    if (count > 0 && itemCount > 0) {
+//                        val child = recyclerView.getChildAt(count - 1) ?: return
+//                        val position = recyclerView.getChildAdapterPosition(child)
+//                        if (position > itemCount - mWrapper.startLoadMorePosition()) {
+//                            Handler().post {
+//                                mPresenter.loadMore()
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+
         })
     }
 
