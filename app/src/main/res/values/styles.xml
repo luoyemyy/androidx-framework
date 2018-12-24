@@ -20,4 +20,18 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 
+    <style name="DialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="DialogTheme.Transparent">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="DialogTheme.Floating">
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
 </resources>

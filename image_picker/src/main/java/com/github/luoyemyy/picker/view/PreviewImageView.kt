@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -43,31 +42,39 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
      * 设置图片时，设置当前的scaleType
      */
     override fun setImageDrawable(drawable: Drawable?) {
-        mChange = false
+        scaleType = ScaleType.CENTER_INSIDE
+        super.setImageDrawable(drawable)
+    }
+
+    private fun setMatrixType() {
         val dWidth = drawable?.intrinsicWidth ?: 0
         val dHeight = drawable?.intrinsicHeight ?: 0
         if (dWidth > 0 && dHeight > 0) {
-            val vWidth = mVWidth
-            val vHeight = mVHeight
-
-            mMatrix.reset()
-
-            val scale = if (dWidth <= vWidth && dHeight <= vHeight) {
-                1.0f
-            } else {
-                Math.min(vWidth.toFloat() / dWidth.toFloat(), vHeight.toFloat() / dHeight.toFloat())
-            }
-
-            val dx = Math.round((vWidth - dWidth * scale) * 0.5f).toFloat()
-            val dy = Math.round((vHeight - dHeight * scale) * 0.5f).toFloat()
-
-            mMatrix.postScale(scale, scale)
-            mMatrix.postTranslate(dx, dy)
-
-            mResetMatrix.set(mMatrix)
+            mMatrix.set(imageMatrix)
+            mResetMatrix.set(imageMatrix)
             scaleType = ScaleType.MATRIX
             imageMatrix = mMatrix
-            super.setImageDrawable(drawable)
+
+//            val vWidth = mVWidth
+//            val vHeight = mVHeight
+//
+//            mMatrix.reset()
+//
+//            val scale = if (dWidth <= vWidth && dHeight <= vHeight) {
+//                1.0f
+//            } else {
+//                Math.min(vWidth.toFloat() / dWidth.toFloat(), vHeight.toFloat() / dHeight.toFloat())
+//            }
+//
+//            val dx = Math.round((vWidth - dWidth * scale) * 0.5f).toFloat()
+//            val dy = Math.round((vHeight - dHeight * scale) * 0.5f).toFloat()
+//
+//            mMatrix.postScale(scale, scale)
+//            mMatrix.postTranslate(dx, dy)
+//
+//            mResetMatrix.set(mMatrix)
+//            scaleType = ScaleType.MATRIX
+//            imageMatrix = mMatrix
         }
     }
 
@@ -174,6 +181,7 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
 
         override fun onDown(e: MotionEvent?): Boolean {
             mChange = false
+            setMatrixType()
             return false
         }
 

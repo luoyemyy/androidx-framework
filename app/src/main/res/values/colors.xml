@@ -11,4 +11,6 @@
     <color name="text_black">#FF000000</color>
     <color name="text_white">#FFFFFFFF</color>
     <color name="text_primary">#008577</color>
+    
+    <color name="translucence">#80000000</color>
 </resources>

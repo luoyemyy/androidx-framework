@@ -14,6 +14,11 @@ interface RecyclerAdapterWrapper<T, BIND : ViewDataBinding> {
     fun getItem(position: Int): T?
 
     /**
+     * 绑定额外项数据
+     */
+    fun bindExtraViewHolder(binding: ViewDataBinding, position: Int){}
+
+    /**
      * 绑定数据
      */
     fun bindContentViewHolder(binding: BIND, content: T, position: Int)
@@ -55,30 +60,22 @@ interface RecyclerAdapterWrapper<T, BIND : ViewDataBinding> {
     /**
      * 获得加载更多-加载中样式
      */
-    fun getMoreLoadingLayout(): Int {
-        return 0
-    }
+    fun getMoreLoadingBinding(): ViewDataBinding? = null
 
     /**
      * 获得加载更多-暂无更多样式
      */
-    fun getMoreEndLayout(): Int {
-        return 0
-    }
+    fun getMoreEndBinding(): ViewDataBinding? = null
 
     /**
      * 获得空数据样式
      */
-    fun getEmptyLayout(): Int {
-        return 0
-    }
+    fun getEmptyBinding(): ViewDataBinding? = null
 
     /**
      * 获得加载更多-加载失败样式
      */
-    fun getMoreErrorLayout(): Int {
-        return 0
-    }
+    fun getMoreErrorBinding(): ViewDataBinding? = null
 
     fun getRecyclerView(): RecyclerView
 

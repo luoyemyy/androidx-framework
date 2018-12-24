@@ -59,8 +59,6 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         mDisposable = null
         mAdapterSupport = null
         source?.lifecycle?.removeObserver(this)
-
-        Log.e(this::class.java.simpleName, "onDestroy:")
     }
 
     fun getDataSet(): DataSet<T> {

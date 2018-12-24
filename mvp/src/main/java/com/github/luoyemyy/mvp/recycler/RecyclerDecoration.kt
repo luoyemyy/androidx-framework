@@ -81,65 +81,80 @@ class RecyclerDecoration private constructor(private val type: Int, private val 
     }
 
 
-    private var spacePx = if (spaceUnitPx) space else dp2px(context, space)
+    private var mSpacePx = if (spaceUnitPx) space else dp2px(space)
 
-    private var drawDivider: Boolean = false
-    private var leftPx: Int = 0
-    private var rightPx: Int = 0
-    private lateinit var paint: Paint
+    private var mDrawDivider: Boolean = false
+    private var mLeftPx: Int = 0
+    private var mRightPx: Int = 0
+    private lateinit var mPaint: Paint
 
     /**
-     * @param color         分割颜色  0 不绘制分割线
+     * @param dividerColor  分割颜色  0 不绘制分割线
      * @param left          分割线左边padding
      * @param right         分割线右边padding
      * @param paddingUnitPx   分割线padding的单位 true px false dp
      */
-    fun drawDivider(color: Int = 0x1e000000, left: Int = 0, right: Int = 0, paddingUnitPx: Boolean = false): RecyclerDecoration {
-        this.drawDivider = true
-        this.leftPx = if (paddingUnitPx) left else dp2px(context, left)
-        this.rightPx = if (paddingUnitPx) right else dp2px(context, right)
-        this.paint = Paint().apply {
-            this.style = Paint.Style.FILL
-            this.color = color
+    fun drawDivider(dividerColor: Int = 0x1e000000, left: Int = 0, right: Int = 0, paddingUnitPx: Boolean = false): RecyclerDecoration {
+        if (dividerColor != 0) {
+            mDrawDivider = true
+            mLeftPx = if (paddingUnitPx) left else dp2px(left)
+            mRightPx = if (paddingUnitPx) right else dp2px(right)
+            mPaint = Paint().apply {
+                style = Paint.Style.FILL
+                color = dividerColor
+            }
         }
         return this
     }
 
 
-    private fun dp2px(context: Context, dp: Int): Int = (context.resources.displayMetrics.density * dp).roundToInt()
+    private fun dp2px(dp: Int): Int = (context.resources.displayMetrics.density * dp).roundToInt()
+
+    private fun hasBegin(position: Int): Boolean {
+        return type and BEGIN == BEGIN && position == 0
+    }
+
+    private fun hasMiddle(position: Int, itemCount: Int): Boolean {
+        return type and MIDDLE == MIDDLE && position >= 0 && position < itemCount - 1
+    }
+
+    private fun hasEnd(position: Int, itemCount: Int): Boolean {
+        return type and END == END && position == itemCount - 1
+    }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         val itemCount = parent.adapter?.itemCount ?: return
         if (itemCount > 0) {
             val position = parent.getChildAdapterPosition(view)
-            if (type and BEGIN == BEGIN && position == 0) {
-                outRect.top = spacePx
+            if (hasBegin(position)) {
+                outRect.top = mSpacePx
             }
-            if (type and MIDDLE == MIDDLE && position >= 0 && position < itemCount - 1) {
-                outRect.bottom = spacePx
+            if (hasMiddle(position, itemCount)) {
+                outRect.bottom = mSpacePx
             }
-            if (type and END == END && position == itemCount - 1) {
-                outRect.bottom = spacePx
+            if (hasEnd(position, itemCount)) {
+                outRect.bottom = mSpacePx
             }
         }
     }
 
+
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         val itemCount = parent.adapter?.itemCount ?: return
         val childCount = parent.childCount
-        if (drawDivider && itemCount > 0 && childCount > 0) {
+        if (mDrawDivider && itemCount > 0 && childCount > 0) {
             c.save()
             (0 until childCount).forEach { i ->
                 parent.getChildAt(i)?.apply {
                     val position = parent.getChildAdapterPosition(this)
-                    if (type and BEGIN == BEGIN && position == 0) {
-                        c.drawRect(Rect(leftPx, top - spacePx, right - rightPx, top), paint)
+                    if (hasBegin(position)) {
+                        c.drawRect(Rect(mLeftPx, top - mSpacePx, right - mRightPx, top), mPaint)
                     }
-                    if (type and MIDDLE == MIDDLE && position >= 0 && position < itemCount - 1) {
-                        c.drawRect(Rect(leftPx, bottom, right - rightPx, bottom + spacePx), paint)
+                    if (hasMiddle(position, itemCount)) {
+                        c.drawRect(Rect(mLeftPx, bottom, right - mRightPx, bottom + mSpacePx), mPaint)
                     }
-                    if (type and END == END && position == itemCount - 1) {
-                        c.drawRect(Rect(leftPx, bottom, right - rightPx, bottom + spacePx), paint)
+                    if (hasEnd(position, itemCount)) {
+                        c.drawRect(Rect(mLeftPx, bottom, right - mRightPx, bottom + mSpacePx), mPaint)
                     }
                 }
             }
