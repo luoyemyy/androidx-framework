@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
-internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(private var mWrapper: RecyclerAdapterWrapper<T, BIND>, private var mPresenter: RecyclerPresenterSupport<T>) {
+internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(
+        private var mWrapper: RecyclerAdapterWrapper<T, BIND>,
+        private var mPresenter: RecyclerPresenterSupport<T>) {
 
     init {
         /**
