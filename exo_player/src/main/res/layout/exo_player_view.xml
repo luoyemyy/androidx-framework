@@ -1,5 +1,4 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <com.google.android.exoplayer2.ui.AspectRatioFrameLayout
         android:id="@id/exo_content_frame"
@@ -52,6 +51,5 @@
     <com.github.luoyemyy.exo.ExoPlayerControlView
         android:id="@id/exo_controller"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:controller_layout_id="@layout/exo_player_controller_view" />
+        android:layout_height="match_parent" />
 </merge>

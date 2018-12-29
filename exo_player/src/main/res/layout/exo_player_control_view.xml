@@ -62,7 +62,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/exo_progress"
             app:layout_constraintTop_toTopOf="@id/guideline"
-            tools:text="10:01" />
+            tools:text="1:01:00" />
 
         <com.google.android.exoplayer2.ui.DefaultTimeBar
             android:id="@id/exo_progress"
@@ -86,7 +86,7 @@
             app:layout_constraintRight_toLeftOf="@id/imgFullscreen"
             app:layout_constraintTop_toTopOf="@id/guideline"
             app:layout_goneMarginEnd="16dp"
-            tools:text="12:00" />
+            tools:text="2:00:00" />
 
         <ImageView
             android:id="@+id/imgFullscreen"
@@ -94,7 +94,7 @@
             android:layout_height="48dp"
             android:contentDescription="@null"
             android:padding="8dp"
-            android:src="@drawable/player_view_ic_fullscreen"
+            android:src="@drawable/exo_controls_fullscreen_enter"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/exo_duration"
