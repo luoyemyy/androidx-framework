@@ -9,6 +9,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 abstract class AbstractApiManager {
 
+    companion object {
+        var mRetrofit: Retrofit? = null
+    }
+
     abstract fun baseUrl(): String
 
     open fun client(): OkHttpClient.Builder = OkHttpClient.Builder().addInterceptor(LogInterceptor())
@@ -17,7 +21,7 @@ abstract class AbstractApiManager {
 
     open fun adapter(): CallAdapter.Factory? = RxJava2CallAdapterFactory.create()
 
-    inline fun <reified T> getApi(): T {
+    fun getRetrofit(): Retrofit {
         return Retrofit.Builder().baseUrl(baseUrl()).client(client().build()).apply {
             converter()?.also {
                 addConverterFactory(it)
@@ -25,6 +29,10 @@ abstract class AbstractApiManager {
             adapter()?.also {
                 addCallAdapterFactory(it)
             }
-        }.build().create(T::class.java)
+        }.build()
+    }
+
+    inline fun <reified T> getApi(): T {
+        return (mRetrofit ?: getRetrofit().apply { mRetrofit = this }).create(T::class.java)
     }
 }

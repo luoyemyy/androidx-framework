@@ -24,5 +24,5 @@ object RegExt {
     const val REG_DATE = "^\\d{4}-\\d{1,2}-\\d{1,2}"
     const val REG_DATE_TIME = "^\\d{4}-\\d{1,2}-\\d{1,2} \\d{1,2}:\\d{1,2}:\\d{1,2}"
 
-    internal fun match(string: String?, reg: String): Boolean = if (string.empty()) false else Pattern.compile(reg).matcher(string).matches()
+    internal fun match(string: String?, reg: String): Boolean = if (string.isNullOrEmpty()) false else Pattern.compile(reg).matcher(string).matches()
 }

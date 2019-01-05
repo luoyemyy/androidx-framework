@@ -67,8 +67,8 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
             mResetMatrix.set(mMatrix)
             scaleType = ScaleType.MATRIX
             imageMatrix = mMatrix
-            super.setImageDrawable(drawable)
         }
+        super.setImageDrawable(drawable)
     }
 
     /**

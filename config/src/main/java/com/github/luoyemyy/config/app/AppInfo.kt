@@ -1,7 +1,6 @@
 package com.github.luoyemyy.config.app
 
 import android.app.Application
-import android.os.StrictMode
 import com.github.luoyemyy.file.FileManager
 import com.github.luoyemyy.logger.AppError
 import com.github.luoyemyy.logger.Logger
@@ -22,9 +21,5 @@ object AppInfo {
         Logger.enableConsoleLog = enableConsoleLog
         Logger.enableFileLog = enableFileLog
         Logger.logPath = FileManager.getInstance().inner().dir(FileManager.LOG)?.absolutePath
-
-        StrictMode.ThreadPolicy.Builder().detectAll().penaltyDialog()
-        StrictMode.VmPolicy.Builder().detectAll().penaltyLog()
-
     }
 }

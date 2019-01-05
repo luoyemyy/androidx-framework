@@ -37,7 +37,6 @@ dependencies {
     implementation "com.google.code.gson:gson:$gson_version"
     implementation project(':logger')
     implementation project(':file')
-    implementation project(':async')
     implementation project(':ext')
 }
 
