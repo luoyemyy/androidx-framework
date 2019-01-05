@@ -38,6 +38,7 @@ dependencies {
     implementation project(':mvp')
     implementation project(':file')
     implementation project(':ext')
+    implementation project(':bus')
 }
 
 task sourcesJar(type: Jar) {

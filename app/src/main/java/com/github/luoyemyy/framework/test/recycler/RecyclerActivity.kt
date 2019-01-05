@@ -53,7 +53,7 @@ class RecyclerActivity : AppCompatActivity(), BusResult {
                 mBinding.stick.name = "${item.type},${item.name}"
             }
         })
-        mBinding.recyclerView.addItemDecoration(RecyclerDecoration.middle(this, 10, true).drawDivider(Color.RED))
+        mBinding.recyclerView.addItemDecoration(RecyclerDecoration.middle(this, 1, true).drawDivider())
 
         mPresenter.loadInit(savedInstanceState != null)
     }
@@ -93,6 +93,10 @@ class RecyclerActivity : AppCompatActivity(), BusResult {
 
         override fun setRefreshState(refreshing: Boolean) {
             mBinding.swipeRefreshLayout.isRefreshing = refreshing
+        }
+
+        override fun onItemClickListener(vh: VH<ViewDataBinding>, view: View?) {
+            TestDialogFragment().show(supportFragmentManager, "1111")
         }
     }
 

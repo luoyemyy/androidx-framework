@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
-internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(private var mWrapper: RecyclerAdapterWrapper<T, BIND>, private var mPresenter: RecyclerPresenterSupport<T>) {
+internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(
+        private var mWrapper: RecyclerAdapterWrapper<T, BIND>,
+        private var mPresenter: RecyclerPresenterSupport<T>) {
 
     init {
         /**
@@ -31,6 +33,23 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(private var mW
                     }
                 }
             }
+
+//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                    val count = recyclerView.childCount
+//                    val itemCount = recyclerView.adapter?.itemCount ?: -1
+//                    if (count > 0 && itemCount > 0) {
+//                        val child = recyclerView.getChildAt(count - 1) ?: return
+//                        val position = recyclerView.getChildAdapterPosition(child)
+//                        if (position > itemCount - mWrapper.startLoadMorePosition()) {
+//                            Handler().post {
+//                                mPresenter.loadMore()
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+
         })
     }
 
@@ -49,6 +68,10 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(private var mW
             val item = getItem(position, true) ?: return
             val binding = holder.binding ?: return
             mWrapper.bindContentViewHolder(binding, item, position)
+        } else {
+            holder.binding?.apply {
+                mWrapper.bindExtraViewHolder(this, position)
+            }
         }
     }
 
@@ -142,27 +165,15 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(private var mW
     }
 
     private fun createEmptyView(context: Context): View {
-        return if (mWrapper.getEmptyLayout() == 0) {
-            createLayout(context, "暂无数据")
-        } else {
-            LayoutInflater.from(context).inflate(mWrapper.getEmptyLayout(), mWrapper.getRecyclerView(), false)
-        }
+        return mWrapper.getEmptyBinding()?.root ?: createLayout(context, "暂无数据")
     }
 
     private fun createMoreEndView(context: Context): View {
-        return if (mWrapper.getMoreEndLayout() == 0) {
-            createLayout(context, "暂无更多")
-        } else {
-            LayoutInflater.from(context).inflate(mWrapper.getMoreEndLayout(), mWrapper.getRecyclerView(), false)
-        }
+        return mWrapper.getMoreEndBinding()?.root ?: createLayout(context, "暂无更多")
     }
 
     private fun createMoreErrorView(context: Context): View {
-        return if (mWrapper.getMoreErrorLayout() == 0) {
-            createLayout(context, "加载失败")
-        } else {
-            LayoutInflater.from(context).inflate(mWrapper.getMoreErrorLayout(), mWrapper.getRecyclerView(), false)
-        }.apply {
+        return (mWrapper.getMoreErrorBinding()?.root ?: createLayout(context, "加载失败")).apply {
             setOnClickListener {
                 mPresenter.loadMore()
             }
@@ -170,15 +181,13 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(private var mW
     }
 
     private fun createMoreLoadingView(context: Context): View {
-        return if (mWrapper.getMoreLoadingLayout() == 0) {
+        return mWrapper.getMoreLoadingBinding()?.root ?: let {
             val layout = createLayout(context, "加载中...")
             val padding = dp2px(context, 8)
             val progressSize = dp2px(context, 20)
             val process = ProgressBar(context)
             layout.addView(process, 0, LinearLayout.LayoutParams(progressSize, progressSize).apply { marginEnd = padding })
             layout
-        } else {
-            LayoutInflater.from(context).inflate(mWrapper.getMoreLoadingLayout(), mWrapper.getRecyclerView(), false)
         }
     }
 }

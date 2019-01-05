@@ -205,25 +205,34 @@ class DataSet<T> {
 
     /**
      * 初始化内容列表
+     * 如果可以加载更多，则设置当前页已加载完，不判断所有数据是否已经全部加载，
+     * 如果不允许加载更多则设置全部加载结束
      */
     fun initData(list: List<T>?, adapter: RecyclerView.Adapter<*>) {
         setData(list, adapter)
     }
 
     /**
-     * 重置内容列表
+     * 初始化内容列表
+     * 如果可以加载更多，则设置当前页已加载完，不判断所有数据是否已经全部加载，
+     * 如果不允许加载更多则设置全部加载结束
      */
     fun setData(list: List<T>?, adapter: RecyclerView.Adapter<*>) {
         mData.clear()
         if (list != null && list.isNotEmpty()) {
             mData.addAll(list)
         }
-        loadMoreCompleted()
+        if (enableMore) {
+            loadMoreCompleted()
+        } else {
+            loadMoreEnd(moreEndGone)
+        }
         adapter.notifyDataSetChanged()
     }
 
     /**
      * 增加内容列表，并刷新数据
+     * @param list 如果为null或为空，则判定数据已全部加载
      */
     fun addData(list: List<T>?, adapter: RecyclerView.Adapter<*>) {
         postData {
@@ -238,6 +247,7 @@ class DataSet<T> {
 
     /**
      * 在指定数据后面添加列表，未指定或找不到指定数据则默认为0
+     * @param anchor 相对于该对象
      */
     fun addDataAfter(anchor: T?, list: List<T>?, adapter: RecyclerView.Adapter<*>) {
         postData {
@@ -266,6 +276,9 @@ class DataSet<T> {
         }.dispatchUpdatesTo(adapter)
     }
 
+    /**
+     * @param gone 会覆盖 [moreEndGone] 属性
+     */
     fun setMoreEnd(gone: Boolean = false, adapter: RecyclerView.Adapter<*>) {
         postData {
             loadMoreEnd(gone)

@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil
 import com.github.luoyemyy.exo.ExoPlayerHelper
 import com.github.luoyemyy.framework.test.R
 import com.github.luoyemyy.framework.test.databinding.ActivityExoplayerBinding
+import com.google.android.exoplayer2.ui.PlayerView
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -17,5 +18,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         val url = "http://jzvd.nathen.cn/c494b340ff704015bb6682ffde3cd302/64929c369124497593205a4190d7d128-5287d2089db37e62345123a1be272f8b.mp4"
 //        ExoPlayerControl(this).prepareAndPlay(mBinding.playView, url)
 //        ExoPlayerHelper(this).play(url, mBinding.exoPlayerView)
+        val playerView = findViewById<PlayerView>(R.id.playerView)
+        ExoPlayerHelper.getInstance().play(url, playerView)
     }
 }
