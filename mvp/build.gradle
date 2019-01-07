@@ -35,8 +35,8 @@ dependencies {
     implementation "androidx.fragment:fragment:$support_version"
     implementation "com.google.android.material:material:$support_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-//    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
-//    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
 }
 
 task sourcesJar(type: Jar) {
