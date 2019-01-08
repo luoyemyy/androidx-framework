@@ -33,7 +33,7 @@ interface RecyclerAdapterWrapper<T, BIND : ViewDataBinding> {
     /**
      * 创建内容view
      */
-    fun createContentView(inflater: LayoutInflater, parent: ViewGroup, viewType: Int): BIND
+    fun createContentView(inflater: LayoutInflater, parent: ViewGroup, viewType: Int): BIND?
 
     /**
      * 获得内容类型id，如果是多类型需要重写该方法

@@ -92,19 +92,19 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(
     }
 
     fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH<BIND> {
-        return if (isContentByType(viewType)) {
-            val binding = mWrapper.createContentView(LayoutInflater.from(parent.context), parent, viewType)
-            VH(binding, binding.root).apply {
-                mWrapper.bindItemEvents(this)
-                mWrapper.getItemClickViews(binding).forEach {
-                    it.setOnClickListener { v ->
-                        mWrapper.onItemClickListener(this, v)
+        if (isContentByType(viewType)) {
+            mWrapper.createContentView(LayoutInflater.from(parent.context), parent, viewType)?.let { binding ->
+                return VH(binding, binding.root).apply {
+                    mWrapper.bindItemEvents(this)
+                    mWrapper.getItemClickViews(binding).forEach {
+                        it.setOnClickListener { v ->
+                            mWrapper.onItemClickListener(this, v)
+                        }
                     }
                 }
             }
-        } else {
-            VH(null, createExtraView(parent, viewType))
         }
+        return VH(null, createExtraView(parent, viewType))
     }
 
     fun getItemViewType(position: Int): Int {
