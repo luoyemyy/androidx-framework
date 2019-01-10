@@ -20,28 +20,34 @@ class CropPresenter(var app: Application) : AbstractRecyclerPresenter<CropImage>
     val liveDataSingleImage = MutableLiveData<Boolean>()
     private var mImages = mutableListOf<CropImage>()
 
-    fun startCrop(reload: Boolean, bundle: Bundle?) {
-        if (reload) {
-            loadInit(true, null)
-            liveDataCropImage.postValue(liveDataCropImage.value)
-            return
-        }
-        bundle?.getString("images")?.toList<String>()?.forEachIndexed { index, it ->
-            mImages.add(CropImage(it, it, index, false))
-        }
+    private fun startCrop() {
         if (mImages.size == 1) {
             liveDataSingleImage.postValue(true)
-            liveDataCropImage.postValue(mImages[0])
-        } else {
-            loadInit()
-            if (mImages.size > 0) {
-                liveDataCropImage.postValue(mImages[0])
-            }
+            clickImage(selectedImageIndex())
+        } else if (mImages.size > 0) {
+            clickImage(selectedImageIndex())
         }
     }
 
+    private fun selectedImageIndex(): Int {
+        return mImages.firstOrNull { it.selected }?.index ?: 0
+    }
+
+    override fun loadInit(bundle: Bundle?) {
+        startCrop()
+        super.loadInit(bundle)
+    }
+
     override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?): List<CropImage>? {
+        bundle?.getString("images")?.toList<String>()?.forEachIndexed { index, it ->
+            mImages.add(CropImage(it, it, index, false))
+        }
         return mImages
+    }
+
+    override fun afterLoadInit(ok: Boolean, list: List<CropImage>?) {
+        super.afterLoadInit(ok, list)
+        startCrop()
     }
 
     fun resetCrop() {
@@ -63,7 +69,7 @@ class CropPresenter(var app: Application) : AbstractRecyclerPresenter<CropImage>
                 getDataSet().change(index, getAdapter())
             }
             if (mImages.size > index + 1) {
-                liveDataCropImage.postValue(mImages[index + 1])
+                clickImage(index + 1)
             }
         }
     }
@@ -79,16 +85,19 @@ class CropPresenter(var app: Application) : AbstractRecyclerPresenter<CropImage>
     }
 
     fun clickImage(position: Int) {
-
         val oldPosition = liveDataCropImage.value?.index ?: -1
         if (position != oldPosition) {
             getAdapterSupport()?.getAdapter()?.apply {
-                getDataSet().change(oldPosition, this) {
-                    it.selected = false
+                if (oldPosition > -1) {
+                    getDataSet().change(oldPosition, this) {
+                        it.selected = false
+                    }
                 }
-                getDataSet().change(position, this) {
-                    it.selected = true
-                    liveDataCropImage.postValue(it)
+                if (position > -1) {
+                    getDataSet().change(position, this) {
+                        it.selected = true
+                        liveDataCropImage.postValue(it)
+                    }
                 }
             }
         }

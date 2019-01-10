@@ -35,7 +35,7 @@ class BlankFragment : Fragment() {
         mBinding.recyclerView.setLinearManager()
         val reload = savedInstanceState != null || this::mPresenter.isInitialized
         mPresenter = getRecyclerPresenter(this, Adapter())
-        mPresenter.loadInit(reload,arguments)
+        mPresenter.loadInit(arguments)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +62,7 @@ class BlankFragment : Fragment() {
 
     class Presenter(var app: Application) : AbstractRecyclerPresenter<Any>(app) {
         override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?): List<Any>? {
-            return listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0)
+            return listOf(1, 2, 3, 4, 5, 6)
         }
     }
 

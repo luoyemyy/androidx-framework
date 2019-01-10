@@ -13,7 +13,10 @@ import com.github.luoyemyy.debug.databinding.DebugActivityDebugBinding
 import com.github.luoyemyy.debug.databinding.DebugActivityDebugItemBinding
 import com.github.luoyemyy.debug.log.LogActivity
 import com.github.luoyemyy.mvp.getRecyclerPresenter
-import com.github.luoyemyy.mvp.recycler.*
+import com.github.luoyemyy.mvp.recycler.AbstractRecyclerPresenter
+import com.github.luoyemyy.mvp.recycler.AbstractSingleRecyclerAdapter
+import com.github.luoyemyy.mvp.recycler.VH
+import com.github.luoyemyy.mvp.recycler.setLinearManager
 
 class DebugActivity : AppCompatActivity() {
     private lateinit var mBinding: DebugActivityDebugBinding
@@ -80,10 +83,10 @@ class DebugActivity : AppCompatActivity() {
     }
 
     class Presenter(app: Application) : AbstractRecyclerPresenter<Action>(app) {
-        override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?): List<Action>? {
-            return listOf(Action(1, "运行日志"),
-                    Action(2, "异常日志"),
-                    Action(3, "Profile"))
-        }
+//        override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?): List<Action>? {
+//            return listOf(Action(1, "运行日志"),
+//                    Action(2, "异常日志"),
+//                    Action(3, "Profile"))
+//        }
     }
 }

@@ -2,7 +2,6 @@ package com.github.luoyemyy.picker.album
 
 import android.app.ActivityOptions
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Pair
 import android.view.*
@@ -56,7 +55,7 @@ class AlbumActivity : AppCompatActivity() {
 
         mAlbumPresenter.liveDataInit.observe(this, Observer {
             mBucketPresenter.buckets = mAlbumPresenter.buckets
-            mBucketPresenter.loadInit(false)
+            mBucketPresenter.loadInit()
         })
         mAlbumPresenter.liveDataMenu.observe(this, Observer {
             invalidateOptionsMenu()
@@ -79,7 +78,7 @@ class AlbumActivity : AppCompatActivity() {
             showBucket()
         }
 
-        mAlbumPresenter.loadInit(savedInstanceState != null)
+        mAlbumPresenter.loadInit()
     }
 
     private fun showBucket() {
@@ -176,7 +175,7 @@ class AlbumActivity : AppCompatActivity() {
             }
         }
 
-        override fun afterLoadRefresh(list: List<Image>?) {
+        override fun afterLoadRefresh(ok: Boolean, list: List<Image>?) {
             if (list != null && list.isNotEmpty()) {
                 mBinding.recyclerView.scrollToPosition(0)
             }

@@ -1,38 +1,27 @@
 package com.github.luoyemyy.mvp.recycler
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.*
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class RecyclerPresenterDelegate<T> : LifecycleObserver {
 
-    private var mPresenterWrapper: RecyclerPresenterWrapper<T>? = null
+    private var mPresenter: RecyclerPresenterWrapper<T>? = null
+    private var mAdapter: RecyclerAdapterSupport<T>? = null
     private val mDataSet by lazy { DataSet<T>() }
-    private var mPaging: Paging = Paging.Page()
-    private var mAdapterSupport: RecyclerAdapterSupport<T>? = null
     private val mLiveDataRefreshState = MutableLiveData<Boolean>()
-    private var mDisposable: Disposable? = null
     private var mScrollPosition: Int = -1
     private var mScrollOffset: Int = -1
-    private var mRefreshStartMills: Long = 0
-    private val mWaitTime: Long = 600
-    private val mHandler = Handler(Looper.getMainLooper())
-    private val mRefreshEndCallback = {
-        mLiveDataRefreshState.value = false
+    private var mInitialized = false
+
+    internal fun setPresenter(presenterWrapper: RecyclerPresenterWrapper<T>) {
+        mPresenter = presenterWrapper
     }
 
-    internal fun setPresenterWrapper(presenterWrapper: RecyclerPresenterWrapper<T>) {
-        mPresenterWrapper = presenterWrapper
-    }
-
-    internal fun setAdapterSupport(owner: LifecycleOwner, adapter: RecyclerAdapterSupport<T>) {
-        if (mAdapterSupport == null) {
+    internal fun setAdapter(owner: LifecycleOwner, adapter: RecyclerAdapterSupport<T>) {
+        if (mAdapter == null) {
             adapter.apply {
                 mDataSet.enableEmpty = enableEmpty()
                 mDataSet.enableMore = enableLoadMore()
@@ -41,23 +30,17 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         } else {
             mLiveDataRefreshState.removeObservers(owner)
         }
-        mAdapterSupport = adapter
+        mAdapter = adapter
 
         owner.lifecycle.addObserver(this)
         mLiveDataRefreshState.observe(owner, Observer<Boolean> {
-            mAdapterSupport?.setRefreshState(it ?: false)
+            mAdapter?.setRefreshState(it ?: false)
         })
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun onDestroy(source: LifecycleOwner?) {
-        mDisposable?.apply {
-            if (!isDisposed) {
-                dispose()
-            }
-        }
-        mDisposable = null
-        mAdapterSupport = null
+        mAdapter = null
         source?.lifecycle?.removeObserver(this)
     }
 
@@ -65,16 +48,8 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         return mDataSet
     }
 
-    fun getPaging(): Paging {
-        return mPaging
-    }
-
-    fun setPaging(paging: Paging) {
-        mPaging = paging
-    }
-
     fun getAdapterSupport(): RecyclerAdapterSupport<*>? {
-        return mAdapterSupport
+        return mAdapter
     }
 
     fun onScroll(position: Int, offset: Int) {
@@ -82,163 +57,148 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         mScrollOffset = offset
     }
 
+    fun isInitialized(): Boolean = mInitialized
+
     private fun startRefresh() {
-        mHandler.removeCallbacks(mRefreshEndCallback)
-        mRefreshStartMills = System.currentTimeMillis()
         mLiveDataRefreshState.value = true
     }
 
     private fun endRefresh() {
-        val i = System.currentTimeMillis() - mRefreshStartMills
-        if (i > mWaitTime) {
-            mLiveDataRefreshState.value = false
-        } else {
-            mHandler.postDelayed(mRefreshEndCallback, mWaitTime - i)
-        }
+        mLiveDataRefreshState.value = false
     }
 
-    private fun beforeLoadInit(bundle: Bundle?) {
-        mPresenterWrapper?.beforeLoadInit(bundle)
-        mAdapterSupport?.apply {
-            beforeLoadInit(bundle)
-            mPaging.reset()
-            startRefresh()
-        }
+    private fun beforeLoadInit(bundle: Bundle?): Boolean {
+        return mPresenter?.let { presenter ->
+            mAdapter?.let { adapter ->
+                presenter.beforeLoadInit(bundle)
+                adapter.beforeLoadInit(bundle)
+                getDataSet().getPaging().reset()
+                startRefresh()
+                true
+            } ?: false
+        } ?: false
     }
 
-    fun loadInit(reload: Boolean, bundle: Bundle?) {
-        if (reload) {
-            mAdapterSupport?.attachToRecyclerView(mScrollPosition, mScrollOffset)
-        } else {
-            beforeLoadInit(bundle)
+    fun loadInit(bundle: Bundle?) {
+        if (mInitialized) {
+            mAdapter?.attachToRecyclerView(mScrollPosition, mScrollOffset)
+        } else if (beforeLoadInit(bundle)) {
             loadData(LoadType.init(), bundle)
         }
     }
 
-    private fun afterLoadInit(list: List<T>?) {
-        mPresenterWrapper?.afterLoadInit(list)
-        mAdapterSupport?.apply {
-            mDataSet.initData(list, getAdapter())
-            attachToRecyclerView(mScrollPosition, mScrollOffset)
-            afterLoadInit(list)
-            endRefresh()
+    private fun afterLoadInit(ok: Boolean, list: List<T>? = null) {
+        mPresenter?.let { presenter ->
+            mAdapter?.let { adapter ->
+                adapter.attachToRecyclerView(-1, 0)
+                presenter.afterLoadInit(ok, list)
+                adapter.afterLoadInit(ok, list)
+                endRefresh()
+                mInitialized = true
+            }
         }
     }
 
-    private fun beforeLoadRefresh() {
-        mPresenterWrapper?.beforeLoadRefresh()
-        mAdapterSupport?.apply {
-            beforeLoadRefresh()
-            mPaging.reset()
-            startRefresh()
-        }
+    private fun beforeLoadRefresh(): Boolean {
+        return mPresenter?.let { presenter ->
+            mAdapter?.let { adapter ->
+                presenter.beforeLoadRefresh()
+                adapter.beforeLoadRefresh()
+                getDataSet().getPaging().reset()
+                startRefresh()
+                true
+            } ?: false
+        } ?: false
     }
 
     fun loadRefresh() {
-        beforeLoadRefresh()
-        loadData(LoadType.refresh())
-    }
-
-    private fun afterLoadRefresh(list: List<T>?) {
-        mPresenterWrapper?.afterLoadRefresh(list)
-        mAdapterSupport?.apply {
-            mDataSet.setData(list, getAdapter())
-            afterLoadRefresh(list)
-            endRefresh()
+        if (beforeLoadRefresh()) {
+            loadData(LoadType.refresh())
         }
     }
 
-    private fun beforeLoadMore() {
-        mPresenterWrapper?.beforeLoadMore()
-        mAdapterSupport?.apply {
-            beforeLoadMore()
-            mPaging.next()
+    private fun afterLoadRefresh(ok: Boolean, list: List<T>? = null) {
+        mPresenter?.let { presenter ->
+            mAdapter?.let { adapter ->
+                presenter.afterLoadRefresh(ok, list)
+                adapter.afterLoadRefresh(ok, list)
+                endRefresh()
+            }
         }
+    }
+
+    private fun beforeLoadMore(): Boolean {
+        return mPresenter?.let { presenter ->
+            mAdapter?.let { adapter ->
+                presenter.beforeLoadMore()
+                adapter.beforeLoadMore()
+                getDataSet().getPaging().next()
+                true
+            } ?: false
+        } ?: false
     }
 
     fun loadMore() {
         if (!mDataSet.canLoadMore()) {
             return
-        }
-        beforeLoadMore()
-        loadData(LoadType.more())
-
-    }
-
-    private fun afterLoadMore(list: List<T>?) {
-        mPresenterWrapper?.afterLoadMore(list)
-        mAdapterSupport?.apply {
-            mDataSet.addData(list, getAdapter())
-            afterLoadMore(list)
+        } else if (beforeLoadMore()) {
+            loadData(LoadType.more())
         }
     }
 
-    private fun beforeLoadSearch(search: String) {
-        mPresenterWrapper?.beforeLoadSearch(search)
-        mAdapterSupport?.apply {
-            beforeLoadSearch(search)
-            mPaging.reset()
-            startRefresh()
+    private fun afterLoadMore(ok: Boolean, list: List<T>?) {
+        mPresenter?.let { presenter ->
+            mAdapter?.let { adapter ->
+                presenter.afterLoadMore(ok, list)
+                adapter.afterLoadMore(ok, list)
+            }
         }
+    }
+
+    private fun beforeLoadSearch(search: String): Boolean {
+        return mPresenter?.let { presenter ->
+            mAdapter?.let { adapter ->
+                presenter.beforeLoadSearch(search)
+                adapter.beforeLoadSearch(search)
+                getDataSet().getPaging().reset()
+                startRefresh()
+                true
+            } ?: false
+        } ?: false
     }
 
     fun loadSearch(search: String) {
-        beforeLoadSearch(search)
-        loadData(LoadType.search(), null, search)
+        if (beforeLoadSearch(search)) {
+            loadData(LoadType.search(), search = search)
+        }
     }
 
-    private fun afterLoadSearch(list: List<T>?) {
-        mPresenterWrapper?.afterLoadSearch(list)
-        mAdapterSupport?.apply {
-            mDataSet.setData(list, getAdapter())
-            afterLoadSearch(list)
-            endRefresh()
+    private fun afterLoadSearch(ok: Boolean, list: List<T>? = null) {
+        mPresenter?.let { presenter ->
+            mAdapter?.let { adapter ->
+                presenter.afterLoadSearch(ok, list)
+                adapter.afterLoadSearch(ok, list)
+                endRefresh()
+            }
         }
     }
 
     private fun loadData(loadType: LoadType, bundle: Bundle? = null, search: String? = null) {
-        val wrapper = mPresenterWrapper ?: return
-        val r = wrapper.loadData(loadType, mPaging, bundle, search) { ok, value ->
-            if (ok) {
-                loadAfter(loadType, value)
-            } else {
-                loadAfterError(loadType)
-            }
-        }
-        if (!r) {
-            mDisposable?.apply {
-                if (!isDisposed) dispose()
-            }
-            mDisposable = Single
+        mPresenter?.let { presenter ->
+            Single
                     .create<List<T>> {
-                        it.onSuccess(wrapper.loadData(loadType, mPaging, bundle, search)
-                                ?: listOf())
+                        it.onSuccess(presenter.loadData(loadType, mDataSet.getPaging(), bundle, search) ?: listOf())
                     }
                     .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ loadAfter(loadType, it) }, { loadAfterError(loadType) })
-        }
-    }
-
-    private fun loadAfter(loadType: LoadType, list: List<T>?) {
-        when {
-            loadType.isInit() -> afterLoadInit(list)
-            loadType.isRefresh() -> afterLoadRefresh(list)
-            loadType.isMore() -> afterLoadMore(list)
-            loadType.isSearch() -> afterLoadSearch(list)
-        }
-    }
-
-    private fun loadAfterError(loadType: LoadType) {
-        when {
-            loadType.isInit() -> afterLoadInit(null)
-            loadType.isRefresh() -> afterLoadRefresh(null)
-            loadType.isMore() -> {
-                mPaging.nextError()
-                mAdapterSupport?.apply {
-                    mDataSet.setMoreError(getAdapter())
-                }
-            }
-            loadType.isSearch() -> afterLoadSearch(null)
+                    .subscribe { value, error ->
+                        val ok = error == null
+                        when {
+                            loadType.isInit() -> afterLoadInit(ok, value)
+                            loadType.isRefresh() -> afterLoadRefresh(ok, value)
+                            loadType.isMore() -> afterLoadMore(ok, value)
+                            loadType.isSearch() -> afterLoadSearch(ok, value)
+                        }
+                    }
         }
     }
 }

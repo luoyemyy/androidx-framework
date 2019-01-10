@@ -55,7 +55,7 @@ class RecyclerActivity : AppCompatActivity(), BusResult {
         })
         mBinding.recyclerView.addItemDecoration(RecyclerDecoration.middle(this, 1, true).drawDivider())
 
-        mPresenter.loadInit(savedInstanceState != null)
+        mPresenter.loadInit()
     }
 
     override fun busResult(event: String, msg: BusMsg) {

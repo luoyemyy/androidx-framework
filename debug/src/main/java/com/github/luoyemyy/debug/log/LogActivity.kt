@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.github.luoyemyy.async.result
+import com.github.luoyemyy.async.single
 import com.github.luoyemyy.debug.R
 import com.github.luoyemyy.debug.databinding.DebugActivityDebugBinding
 import com.github.luoyemyy.debug.databinding.DebugActivityDebugItemBinding
@@ -86,9 +88,10 @@ class LogActivity : AppCompatActivity() {
 
     class Presenter(app: Application) : AbstractRecyclerPresenter<Log>(app) {
         override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?): List<Log>? {
-            val path = Logger.logPath ?: return null
-            return File(path).listFiles().map {
-                Log(it.name, it.absolutePath)
+            return Logger.logPath?.let {
+                File(it).listFiles().map { f ->
+                    Log(f.name, f.absolutePath)
+                }
             }
         }
     }

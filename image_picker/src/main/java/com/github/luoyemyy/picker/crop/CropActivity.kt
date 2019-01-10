@@ -1,16 +1,15 @@
 package com.github.luoyemyy.picker.crop
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.luoyemyy.ext.hide
 import com.github.luoyemyy.mvp.getRecyclerPresenter
 import com.github.luoyemyy.mvp.recycler.AbstractSingleRecyclerAdapter
 import com.github.luoyemyy.mvp.recycler.VH
@@ -43,15 +42,14 @@ class CropActivity : AppCompatActivity() {
             }
         })
         mPresenter.liveDataSingleImage.observe(this, Observer {
-            mBinding.recyclerView.visibility = View.GONE
+            mBinding.recyclerView.hide()
         })
 
         mBinding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             addItemDecoration(Decoration(context))
         }
-
-        mPresenter.startCrop(savedInstanceState != null, intent.extras)
+        mPresenter.loadInit(intent.extras)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

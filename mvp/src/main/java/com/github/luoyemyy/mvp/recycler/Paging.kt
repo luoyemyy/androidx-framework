@@ -8,26 +8,29 @@ interface Paging {
 
     fun current(): Long
 
-    fun nextError()
+    fun errorBack()
 
     class Page : Paging {
 
-        private var pageNumber: Long = 1
+        private var currentPage: Long = 1
+        private var prevPage: Long = 1
 
         override fun reset() {
-            pageNumber = 1
+            prevPage = currentPage
+            currentPage = 1
         }
 
         override fun next() {
-            pageNumber++
+            prevPage = currentPage
+            currentPage++
         }
 
-        override fun nextError() {
-            pageNumber--
+        override fun errorBack() {
+            currentPage = prevPage
         }
 
         override fun current(): Long {
-            return pageNumber
+            return currentPage
         }
     }
 

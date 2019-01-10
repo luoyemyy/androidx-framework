@@ -13,9 +13,9 @@ class DataSet<T> {
         const val MORE_INIT = -100
         const val MORE_LOADING = -101
         const val MORE_END = -102
-        const val MORE_END_GONE = -105
         const val MORE_COMPLETE = -103
         const val MORE_ERROR = -104
+        const val MORE_END_GONE = -105
         const val CONTENT = 1
     }
 
@@ -48,6 +48,13 @@ class DataSet<T> {
     private val mMoreErrorItem by lazy { ExtraItem(MORE_ERROR) }
 
     /**
+     * 分页
+     */
+    private val mPaging by lazy { Paging.Page() }
+
+    fun getPaging(): Paging = mPaging
+
+    /**
      * 加载更多状态
      * -100 未开始
      * -101 加载中
@@ -74,28 +81,28 @@ class DataSet<T> {
     /**
      * 设置加载中状态
      */
-    fun loadingMore() {
+    private fun loadingMore() {
         mLoadMoreState = MORE_LOADING
     }
 
     /**
      * 设置加载结束，无更多数据
      */
-    fun loadMoreEnd(gone: Boolean) {
-        mLoadMoreState = if (gone) MORE_END_GONE else MORE_END
+    private fun loadMoreEnd() {
+        mLoadMoreState = if (moreEndGone) MORE_END_GONE else MORE_END
     }
 
     /**
      * 设置加载结束，还有数据可加载
      */
-    fun loadMoreCompleted() {
+    private fun loadMoreCompleted() {
         mLoadMoreState = MORE_COMPLETE
     }
 
     /**
      * 设置加载结束，加载失败
      */
-    fun loadMoreError() {
+    private fun loadMoreError() {
         mLoadMoreState = MORE_ERROR
     }
 
@@ -205,28 +212,26 @@ class DataSet<T> {
 
     /**
      * 初始化内容列表
-     * 如果可以加载更多，则设置当前页已加载完，不判断所有数据是否已经全部加载，
-     * 如果不允许加载更多则设置全部加载结束
-     */
-    fun initData(list: List<T>?, adapter: RecyclerView.Adapter<*>) {
-        setData(list, adapter)
-    }
-
-    /**
-     * 初始化内容列表
-     * 如果可以加载更多，则设置当前页已加载完，不判断所有数据是否已经全部加载，
-     * 如果不允许加载更多则设置全部加载结束
+     * 标记当前页已加载完，可以开始加载下一页
      */
     fun setData(list: List<T>?, adapter: RecyclerView.Adapter<*>) {
         mData.clear()
         if (list != null && list.isNotEmpty()) {
             mData.addAll(list)
         }
-        if (enableMore) {
-            loadMoreCompleted()
-        } else {
-            loadMoreEnd(moreEndGone)
+        loadMoreCompleted()
+        adapter.notifyDataSetChanged()
+    }
+
+    /**
+     * 初始化内容列表，标记已加载完全部数据
+     */
+    fun setDataEnd(list: List<T>?, adapter: RecyclerView.Adapter<*>) {
+        mData.clear()
+        if (list != null && list.isNotEmpty()) {
+            mData.addAll(list)
         }
+        loadMoreEnd()
         adapter.notifyDataSetChanged()
     }
 
@@ -240,8 +245,30 @@ class DataSet<T> {
                 mData.addAll(list)
                 loadMoreCompleted()
             } else {
-                loadMoreEnd(moreEndGone)
+                loadMoreEnd()
             }
+        }.dispatchUpdatesTo(adapter)
+    }
+
+    /**
+     * 增加内容列表，并刷新数据，标记为已加载全部数据
+     * @param list
+     */
+    fun addDataEnd(list: List<T>?, adapter: RecyclerView.Adapter<*>) {
+        postData {
+            if (list != null && list.isNotEmpty()) {
+                mData.addAll(list)
+            }
+            loadMoreEnd()
+        }.dispatchUpdatesTo(adapter)
+    }
+
+    /**
+     * 标记加载更多出现失败
+     */
+    fun addDataError(adapter: RecyclerView.Adapter<*>) {
+        postData {
+            loadMoreError()
         }.dispatchUpdatesTo(adapter)
     }
 
@@ -268,24 +295,6 @@ class DataSet<T> {
     }
 
     /**
-     * 增加内容列表，出现错误，刷新变化
-     */
-    fun setMoreError(adapter: RecyclerView.Adapter<*>) {
-        postData {
-            loadMoreError()
-        }.dispatchUpdatesTo(adapter)
-    }
-
-    /**
-     * @param gone 会覆盖 [moreEndGone] 属性
-     */
-    fun setMoreEnd(gone: Boolean = false, adapter: RecyclerView.Adapter<*>) {
-        postData {
-            loadMoreEnd(gone)
-        }.dispatchUpdatesTo(adapter)
-    }
-
-    /**
      * 删除内容列表，并刷新数据
      */
     fun remove(list: List<T>?, adapter: RecyclerView.Adapter<*>) {
@@ -297,22 +306,35 @@ class DataSet<T> {
     }
 
     /**
+     * 删除内容列表，并刷新数据
+     */
+    fun remove(indexArray: IntArray, adapter: RecyclerView.Adapter<*>) {
+        val removeList = mutableListOf<T>()
+        itemList().forEachIndexed { index, t ->
+            if (index in indexArray && t != null) {
+                removeList.add(t)
+            }
+        }
+        remove(removeList, adapter)
+    }
+
+    /**
      * 修改某一项数据，并刷新变化的数据
      */
-    fun change(position: Int, adapter: RecyclerView.Adapter<*>, change: (value: T) -> Unit = {}) {
+    fun change(position: Int, adapter: RecyclerView.Adapter<*>, payload: Any? = null, change: (value: T) -> Unit = {}) {
         item(position)?.let {
             change(it)
-            adapter.notifyItemChanged(position, "change")
+            adapter.notifyItemChanged(position, payload)
         }
     }
 
     /**
      * 修改某一项数据，并刷新变化的数据
      */
-    fun change(value: T?, adapter: RecyclerView.Adapter<*>) {
+    fun change(value: T?, adapter: RecyclerView.Adapter<*>, payload: Any? = null) {
         val position = itemList().indexOfFirst { it == value }
         if (position >= 0) {
-            adapter.notifyItemChanged(position, "change")
+            adapter.notifyItemChanged(position, payload)
         }
     }
 
