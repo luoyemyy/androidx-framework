@@ -1,10 +1,12 @@
 @file:Suppress("unused")
 
-package com.github.luoyemyy.config.ext
+package com.github.luoyemyy.config
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.github.luoyemyy.config.app.AppInfo
+import android.os.AsyncTask
+import android.os.Handler
+import android.os.Looper
 
 /**
  * spf
@@ -57,3 +59,10 @@ fun Context.spfRemove(key: String) {
 fun Context.spfClear() {
     editor().clear().apply()
 }
+
+/**
+ * thread run
+ */
+fun runOnWorker(run: () -> Unit) = AsyncTask.THREAD_POOL_EXECUTOR.execute(run)
+
+fun runOnMain(run: () -> Unit) = Handler(Looper.getMainLooper()).post(run)

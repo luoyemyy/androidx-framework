@@ -33,9 +33,9 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(
                     }
                 }
             }
-
 //            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
 //                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                    recyclerView.canScrollVertically(-1)
 //                    val count = recyclerView.childCount
 //                    val itemCount = recyclerView.adapter?.itemCount ?: -1
 //                    if (count > 0 && itemCount > 0) {
@@ -49,7 +49,6 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(
 //                    }
 //                }
 //            }
-
         })
     }
 

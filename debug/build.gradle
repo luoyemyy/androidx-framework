@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group='com.github.luoyemyy'
+group = 'com.github.luoyemyy'
 
 android {
     compileSdkVersion 28
@@ -38,8 +38,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$support_version"
     implementation "com.google.android.material:material:$support_version"
     implementation project(':logger')
-    implementation project(path: ':mvp')
-    implementation project(path: ':async')
+    implementation project(':mvp')
 }
 
 task sourcesJar(type: Jar) {

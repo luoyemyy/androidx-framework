@@ -1,4 +1,4 @@
-package com.github.luoyemyy.config.app
+package com.github.luoyemyy.config
 
 import android.app.Application
 import com.github.luoyemyy.file.FileManager

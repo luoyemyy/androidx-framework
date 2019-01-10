@@ -1,4 +1,4 @@
-package com.github.luoyemyy.config.app
+package com.github.luoyemyy.config
 
 class Profile private constructor() {
 

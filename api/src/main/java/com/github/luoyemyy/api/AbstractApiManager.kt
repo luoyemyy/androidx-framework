@@ -1,4 +1,4 @@
-package com.github.luoyemyy.config.api
+package com.github.luoyemyy.api
 
 import okhttp3.OkHttpClient
 import retrofit2.CallAdapter

@@ -1,1 +1,1 @@
-include ':app', ':mvp', ':async', ':bus', ':permission', ':logger', ':file', ':audio', ':config', ':debug', ':image_picker', ':ext', ':exo_player', ':handler', ':design'
+include ':app', ':mvp', ':bus', ':permission', ':logger', ':file','debug','design', ':config', ':image_picker', ':ext', ':handler', ':api'

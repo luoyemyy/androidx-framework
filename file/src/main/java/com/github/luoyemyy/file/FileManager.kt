@@ -10,9 +10,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.core.content.ContextCompat
 import java.io.File
-import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -163,7 +161,6 @@ class FileManager(val app: Application) {
          */
         fun cacheFile(type: Type, name: String): File? = cacheDir(type)?.let { File(it, "$name${type.suffix}") }
 
-
     }
 
     /**
@@ -264,7 +261,7 @@ class FileManager(val app: Application) {
 
         private fun isMounted(): Boolean = Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
 
-        private fun hasPermission(): Boolean = ContextCompat.checkSelfPermission(app, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        private fun hasPermission(): Boolean = app.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, android.os.Process.myPid(), android.os.Process.myUid()) == PackageManager.PERMISSION_GRANTED
     }
 
     companion object {
@@ -278,7 +275,6 @@ class FileManager(val app: Application) {
         const val SUFFIX_DB = ".db"
         const val SUFFIX_APK = ".apk"
         const val SUFFIX_EMPTY = ""
-
 
         /**
          * 自定义的目录名称

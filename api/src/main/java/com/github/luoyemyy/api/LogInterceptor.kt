@@ -1,4 +1,4 @@
-package com.github.luoyemyy.config.api
+package com.github.luoyemyy.api
 
 import com.github.luoyemyy.logger.Logger
 import okhttp3.*
