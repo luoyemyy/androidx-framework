@@ -277,7 +277,7 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
             var prev = 0.0f
             var prevVelocityX = velocityX
             var prevVelocityY = velocityY
-            ObjectAnimator.ofInt(0, 400).apply {
+            ObjectAnimator.ofFloat(0f, 400f).apply {
                 interpolator = LinearInterpolator()
                 duration = 400
 
