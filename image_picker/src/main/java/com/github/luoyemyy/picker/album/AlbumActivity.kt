@@ -37,14 +37,10 @@ class AlbumActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         mBinding = DataBindingUtil.setContentView(this, R.layout.image_picker_album)
 
         mBucketPresenter = getRecyclerPresenter(this, BucketAdapter())
         mAlbumPresenter = getRecyclerPresenter(this, AlbumAdapter())
-        if (savedInstanceState != null) {
-            mAlbumPresenter.reCalculateImageItemSize()
-        }
 
         setSupportActionBar(mBinding.toolbar)
         supportActionBar?.apply {
@@ -54,8 +50,7 @@ class AlbumActivity : AppCompatActivity() {
         mAlbumPresenter.setMenu()
 
         mAlbumPresenter.liveDataInit.observe(this, Observer {
-            mBucketPresenter.buckets = mAlbumPresenter.buckets
-            mBucketPresenter.loadInit()
+            mBucketPresenter.loadInit(mAlbumPresenter.buckets)
         })
         mAlbumPresenter.liveDataMenu.observe(this, Observer {
             invalidateOptionsMenu()

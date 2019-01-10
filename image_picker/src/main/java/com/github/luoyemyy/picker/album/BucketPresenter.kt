@@ -11,6 +11,11 @@ class BucketPresenter(val app: Application) : AbstractRecyclerPresenter<Bucket>(
 
     var buckets: List<Bucket>? = null
 
+    fun loadInit(list: List<Bucket>?) {
+        buckets = list
+        loadInit()
+    }
+
     override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?): List<Bucket>? {
         return buckets
     }

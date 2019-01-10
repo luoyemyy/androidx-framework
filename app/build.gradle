@@ -115,6 +115,7 @@ dependencies {
 
 //    implementation project(':audio')
     implementation project(':bus')
+    implementation project(':api')
     implementation project(':config')
     implementation project(':file')
     implementation project(':logger')

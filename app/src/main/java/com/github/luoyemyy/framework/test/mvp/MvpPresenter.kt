@@ -4,7 +4,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.Transformations
 import com.github.luoyemyy.bus.Bus
-import com.github.luoyemyy.config.ext.runOnWorker
+import com.github.luoyemyy.config.runOnWorker
 import com.github.luoyemyy.ext.toJsonString
 import com.github.luoyemyy.framework.test.db.User
 import com.github.luoyemyy.framework.test.db.userDao

@@ -34,6 +34,13 @@ class AlbumPresenter(private val app: Application) : AbstractRecyclerPresenter<I
         }
     }
 
+    override fun loadInit(bundle: Bundle?) {
+        if (!isInitialized()){
+            reCalculateImageItemSize()
+        }
+        super.loadInit(bundle)
+    }
+
     override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?): List<Image>? {
         if (loadType.isInit()) {
             buckets = mModel.queryImage()

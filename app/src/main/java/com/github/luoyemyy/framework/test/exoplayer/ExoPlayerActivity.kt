@@ -3,7 +3,6 @@ package com.github.luoyemyy.framework.test.exoplayer
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.github.luoyemyy.exo.ExoPlayerHelper
 import com.github.luoyemyy.framework.test.R
 import com.github.luoyemyy.framework.test.databinding.ActivityExoplayerBinding
 import com.google.android.exoplayer2.ui.PlayerView
@@ -19,6 +18,6 @@ class ExoPlayerActivity : AppCompatActivity() {
 //        ExoPlayerControl(this).prepareAndPlay(mBinding.playView, url)
 //        ExoPlayerHelper(this).play(url, mBinding.exoPlayerView)
         val playerView = findViewById<PlayerView>(R.id.playerView)
-        ExoPlayerHelper.getInstance().play(url, playerView)
+//        ExoPlayerHelper.getInstance().play(url, playerView)
     }
 }
