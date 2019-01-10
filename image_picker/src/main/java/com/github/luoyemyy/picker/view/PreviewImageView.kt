@@ -9,6 +9,7 @@ import android.graphics.Matrix
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -32,6 +33,8 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
     private var mVHeight: Int = 0
     private var mLastScaleX: Float = 0f
     private var mLastScaleY: Float = 0f
+    private var mFlingAnimator: ValueAnimator? = null
+    private val mAnimDuration = 100
 
     init {
         viewTreeObserver.addOnGlobalLayoutListener {
@@ -119,7 +122,7 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
 
         val animator = ValueAnimator()
         animator.setObjectValues(start, end)
-        animator.duration = 300
+        animator.duration = mAnimDuration.toLong()
         animator.setEvaluator { fraction, _, _ ->
             val v = FloatArray(9)
             for (i in (0..8)) {
@@ -143,7 +146,9 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         mScaleGestureDetector.onTouchEvent(event)
 
         if (mChange && event.action and MotionEvent.ACTION_MASK == MotionEvent.ACTION_UP) {
-            changeEnd()
+            if (!mFling) {
+                changeEnd()
+            }
         }
         return true
     }
@@ -152,9 +157,7 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
      * 图片有变化时，变化结束会调用该方法
      */
     open fun changeEnd() {
-        if (!mFling) {
-            limit()
-        }
+        limit()
     }
 
     /**
@@ -249,6 +252,7 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         override fun onDown(e: MotionEvent?): Boolean {
             mChange = false
             setMatrixType()
+            mFlingAnimator?.cancel()
             return false
         }
 
@@ -272,35 +276,43 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
 
         override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
             mFling = true
-            val ax = velocityX / 400
-            val ay = velocityY / 400
             var prev = 0.0f
-            var prevVelocityX = velocityX
-            var prevVelocityY = velocityY
-            ObjectAnimator.ofFloat(0f, 400f).apply {
+            var prevVelocityX = velocityX / 3000
+            var prevVelocityY = velocityY / 3000
+            val ax = prevVelocityX / mAnimDuration.toFloat()
+            val ay = prevVelocityY / mAnimDuration.toFloat()
+            mFlingAnimator = ObjectAnimator.ofFloat(0f, mAnimDuration.toFloat()).apply {
                 interpolator = LinearInterpolator()
-                duration = 400
+                duration = mAnimDuration.toLong()
 
                 addUpdateListener {
+                    Log.e("onFling", "px：$prevVelocityX")
+                    Log.e("onFling", "py：$prevVelocityY")
+
                     val time = it.animatedValue as Float
                     val dt = time - prev
                     val dx = prevVelocityX * dt
-                    val dy = prevVelocityX * dt
+                    val dy = prevVelocityY * dt
 
                     translate(dx, dy)
                     prevVelocityX -= ax * dt
                     prevVelocityY -= ay * dt
                     prev = time
+
+                    Log.e("onFling", "dx：$dx")
+                    Log.e("onFling", "dy：$dy")
+                    Log.e("onFling", "dt：$dt")
+                    Log.e("onFling", "     ")
                 }
 
                 addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator?) {
                         mFling = false
-                        limit()
+                        changeEnd()
                     }
-
                 })
-            }.start()
+                start()
+            }
             return true
         }
 
