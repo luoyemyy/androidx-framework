@@ -29,7 +29,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.fragment:fragment:$support_version"
-    implementation "androidx.appcompat:appcompat:$support_version"
+    implementation "androidx.appcompat:appcompat:$compat_version"
 }
 
 task sourcesJar(type: Jar) {

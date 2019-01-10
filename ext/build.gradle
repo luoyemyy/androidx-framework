@@ -27,9 +27,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-    implementation "androidx.fragment:fragment:$support_version"
-    implementation "androidx.appcompat:appcompat:$support_version"
+//    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+//    implementation "androidx.fragment:fragment:$support_version"
+    implementation "androidx.appcompat:appcompat:$compat_version"
     implementation "com.google.code.gson:gson:$gson_version"
 }
 

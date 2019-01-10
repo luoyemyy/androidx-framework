@@ -28,7 +28,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "androidx.annotation:annotation:$support_version"
-    implementation "androidx.core:core:$support_version"
+    implementation "androidx.core:core:$core_version"
 }
 
 task sourcesJar(type: Jar) {

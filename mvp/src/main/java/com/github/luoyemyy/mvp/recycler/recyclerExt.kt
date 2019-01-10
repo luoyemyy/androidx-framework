@@ -5,7 +5,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
-
 fun RecyclerView.setLinearManager() {
     layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
 }
@@ -20,6 +19,7 @@ fun RecyclerView.setGridManager(span: Int) {
 
 fun SwipeRefreshLayout.wrap(presenter: RecyclerPresenterSupport<*>) {
     setOnRefreshListener {
+        setProgressViewEndTarget(false, (context.resources.displayMetrics.density * 64).toInt())
         presenter.loadRefresh()
     }
 }
