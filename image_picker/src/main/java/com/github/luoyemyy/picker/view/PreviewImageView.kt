@@ -33,8 +33,10 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
     private var mVHeight: Int = 0
     private var mLastScaleX: Float = 0f
     private var mLastScaleY: Float = 0f
-    private var mFlingAnimator: ValueAnimator? = null
-    private val mAnimDuration = 100
+    private var mAnimator: ValueAnimator? = null
+    private val mAnimDuration = 240
+    private val mMaxScale = 10f
+    private val mMinScale = 0.5f
 
     init {
         viewTreeObserver.addOnGlobalLayoutListener {
@@ -60,11 +62,14 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
     private fun setMatrixType() {
         val dWidth = drawable?.intrinsicWidth ?: 0
         val dHeight = drawable?.intrinsicHeight ?: 0
-        if (dWidth > 0 && dHeight > 0) {
+        if (dWidth > 0 && dHeight > 0 && scaleType != ScaleType.MATRIX) {
             mMatrix.set(imageMatrix)
             mResetMatrix.set(imageMatrix)
             scaleType = ScaleType.MATRIX
             imageMatrix = mMatrix
+
+            Log.e("matrix", "reset : ${getResetValues().contentToString()}")
+            Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
 
 //            val vWidth = mVWidth
 //            val vHeight = mVHeight
@@ -110,7 +115,17 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
      * 重置当前图片
      */
     private fun reset() {
+        Log.e("matrix", "reset : ${getResetValues().contentToString()}")
+        Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
         animator(mMatrix, mResetMatrix)
+    }
+
+    private fun clearAnim() {
+        mAnimator?.apply {
+            if (isRunning) {
+                cancel()
+            }
+        }
     }
 
     /**
@@ -120,21 +135,34 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         val start = getMatrixValues(startMatrix)
         val end = getMatrixValues(endMatrix)
 
-        val animator = ValueAnimator()
-        animator.setObjectValues(start, end)
-        animator.duration = mAnimDuration.toLong()
-        animator.setEvaluator { fraction, _, _ ->
-            val v = FloatArray(9)
-            for (i in (0..8)) {
-                v[i] = start[i] + (end[i] - start[i]) * fraction
+        clearAnim()
+        mAnimator = ValueAnimator().apply {
+            setObjectValues(start, end)
+            duration = mAnimDuration.toLong()
+            setEvaluator { fraction, _, _ ->
+                val v = FloatArray(9)
+                for (i in (0..8)) {
+                    v[i] = start[i] + (end[i] - start[i]) * fraction
+                }
+                Matrix().apply { setValues(v) }
             }
-            Matrix().apply { setValues(v) }
+            addUpdateListener {
+                mMatrix.set(it.animatedValue as Matrix)
+                imageMatrix = mMatrix
+            }
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationCancel(animation: Animator?) {
+                    Log.e("matrix", "cancel")
+                    Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    Log.e("matrix", "end")
+                    Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
+                }
+            })
+            start()
         }
-        animator.addUpdateListener {
-            mMatrix.set(it.animatedValue as Matrix)
-            imageMatrix = mMatrix
-        }
-        animator.start()
     }
 
     /**
@@ -164,27 +192,38 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
      * 图片缩放
      */
     fun scale(scale: Float, x: Float, y: Float) {
+        mChange = true
         mMatrix.postScale(scale, scale, x, y)
         imageMatrix = mMatrix
+        Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
     }
 
     /**
      * 图片平移
      */
     fun translate(x: Float, y: Float) {
+        mChange = true
         mMatrix.postTranslate(x, y)
         imageMatrix = mMatrix
+        Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
     }
 
     /**
      * 限制
      */
     private fun limit() {
+        var anim = true
         val endMatrix = Matrix(mMatrix)
         val scale = getMatrixValues(mMatrix)[Matrix.MSCALE_X]
-        val dScale = if (scale > 10) 10f / scale else if (scale < 0.5) 0.5f / scale else 0f
+        val dScale = when {
+            scale > mMaxScale -> mMaxScale / scale
+            scale < mMinScale -> mMinScale / scale
+            else -> 0f
+        }
         if (dScale > 0) {
             endMatrix.postScale(dScale, dScale, mLastScaleX, mLastScaleY)
+        } else {
+            anim = false
         }
 
         val dWidth = drawable?.intrinsicWidth ?: 0
@@ -227,8 +266,13 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
             else -> 0f
         }
 
-        endMatrix.postTranslate(x, y)
-        animator(mMatrix, endMatrix)
+        if (x == 0f && y == 0f) {
+            anim = false
+        }
+        if (anim) {
+            endMatrix.postTranslate(x, y)
+            animator(mMatrix, endMatrix)
+        }
     }
 
     inner class ScaleGestureListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -242,7 +286,6 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
             mLastScaleX = detector.focusX
             mLastScaleY = detector.focusY
             scale(detector.scaleFactor, detector.focusX, detector.focusY)
-            mChange = true
             return true
         }
     }
@@ -252,14 +295,13 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         override fun onDown(e: MotionEvent?): Boolean {
             mChange = false
             setMatrixType()
-            mFlingAnimator?.cancel()
+            clearAnim()
             return false
         }
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
             mImageViewListeners.forEach { it.onChange() }
             translate(-distanceX, -distanceY)
-            mChange = true
             return true
         }
 
@@ -275,13 +317,14 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         }
 
         override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
+            clearAnim()
             mFling = true
             var prev = 0.0f
             var prevVelocityX = velocityX / 3000
             var prevVelocityY = velocityY / 3000
             val ax = prevVelocityX / mAnimDuration.toFloat()
             val ay = prevVelocityY / mAnimDuration.toFloat()
-            mFlingAnimator = ObjectAnimator.ofFloat(0f, mAnimDuration.toFloat()).apply {
+            mAnimator = ObjectAnimator.ofFloat(0f, mAnimDuration.toFloat()).apply {
                 interpolator = LinearInterpolator()
                 duration = mAnimDuration.toLong()
 
