@@ -3,6 +3,8 @@ package com.github.luoyemyy.mvp.recycler
 import android.app.Application
 import android.os.Bundle
 import androidx.annotation.CallSuper
+import androidx.annotation.MainThread
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 
@@ -83,7 +85,13 @@ abstract class AbstractRecyclerPresenter<T>(app: Application) : AndroidViewModel
         }
     }
 
+    @WorkerThread
     override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?): List<T>? {
         return null
+    }
+
+    @MainThread
+    override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?, afterLoad: (Boolean, List<T>?) -> Unit): Boolean {
+        return false
     }
 }

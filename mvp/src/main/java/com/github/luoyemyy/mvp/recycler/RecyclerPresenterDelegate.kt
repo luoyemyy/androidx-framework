@@ -205,20 +205,37 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
 
     private fun loadData(loadType: LoadType, bundle: Bundle? = null, search: String? = null) {
         mPresenter?.let { presenter ->
+            //sync
+            val async = presenter.loadData(loadType, mDataSet.getPaging(), bundle, search) { ok, value ->
+                afterLoad(loadType, ok, value)
+            }
+            if (async) {
+                return
+            }
+
+            // async
             Single
                     .create<List<T>> {
-                        it.onSuccess(presenter.loadData(loadType, mDataSet.getPaging(), bundle, search) ?: listOf())
+                        val list = try {
+                            presenter.loadData(loadType, mDataSet.getPaging(), bundle, search)
+                        } catch (e: Throwable) {
+                            null
+                        }
+                        it.onSuccess(list ?: listOf())
                     }
                     .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                     .subscribe { value, error ->
-                        val ok = error == null
-                        when {
-                            loadType.isInit() -> afterLoadInit(ok, value)
-                            loadType.isRefresh() -> afterLoadRefresh(ok, value)
-                            loadType.isMore() -> afterLoadMore(ok, value)
-                            loadType.isSearch() -> afterLoadSearch(ok, value)
-                        }
+                        afterLoad(loadType, error == null, value)
                     }
+        }
+    }
+
+    private fun afterLoad(loadType: LoadType, ok: Boolean, value: List<T>?) {
+        when {
+            loadType.isInit() -> afterLoadInit(ok, value)
+            loadType.isRefresh() -> afterLoadRefresh(ok, value)
+            loadType.isMore() -> afterLoadMore(ok, value)
+            loadType.isSearch() -> afterLoadSearch(ok, value)
         }
     }
 }
