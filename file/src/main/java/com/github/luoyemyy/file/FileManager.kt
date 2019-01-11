@@ -302,7 +302,7 @@ class FileManager(val app: Application) {
         private var single: FileManager? = null
 
         @JvmStatic
-        fun initManager(app: Application) {
+        fun init(app: Application) {
             if (single == null) {
                 synchronized(FileManager::class) {
                     if (single == null) {
@@ -315,7 +315,7 @@ class FileManager(val app: Application) {
         @JvmStatic
         fun getInstance(): FileManager {
             return single ?: let {
-                throw NullPointerException("call after FileManager.initManager(app)")
+                throw NullPointerException("call after FileManager.init(app)")
             }
         }
     }

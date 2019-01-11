@@ -95,9 +95,9 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
     private fun afterLoadInit(ok: Boolean, list: List<T>? = null) {
         mPresenter?.let { presenter ->
             mAdapter?.let { adapter ->
-                adapter.attachToRecyclerView(-1, 0)
                 presenter.afterLoadInit(ok, list)
                 adapter.afterLoadInit(ok, list)
+                adapter.attachToRecyclerView(-1, 0)
                 endRefresh()
                 mInitialized = true
             }

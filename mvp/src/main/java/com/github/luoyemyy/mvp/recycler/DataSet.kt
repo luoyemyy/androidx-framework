@@ -5,7 +5,6 @@ package com.github.luoyemyy.mvp.recycler
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
-
 class DataSet<T> {
 
     companion object {
@@ -59,6 +58,7 @@ class DataSet<T> {
      * -100 未开始
      * -101 加载中
      * -102 加载结束，无更多
+     * -105 加载结束，无更多，隐藏提示
      * -103 加载结束，还有更多
      * -104 加载结束，加载错误
      */
@@ -106,6 +106,9 @@ class DataSet<T> {
         mLoadMoreState = MORE_ERROR
     }
 
+    /**
+     * 隐藏加载更多
+     */
     private fun hideMoreEnd(): Boolean {
         return mLoadMoreState == MORE_END_GONE
     }
@@ -196,8 +199,7 @@ class DataSet<T> {
                     MORE_INIT, MORE_LOADING, MORE_COMPLETE -> list.add(mMoreLoadingItem)
                     MORE_END -> list.add(mMoreEndItem)
                     MORE_ERROR -> list.add(mMoreErrorItem)
-                    MORE_END_GONE -> {
-                        //nothing
+                    MORE_END_GONE -> { //nothing
                     }
                 }
             }

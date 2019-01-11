@@ -16,7 +16,7 @@ object AppInfo {
         packageName = app.packageName
         appInfo = spfName ?: "app_info"
 
-        FileManager.initManager(app)
+        FileManager.init(app)
         AppError.init(app)
         Logger.enableConsoleLog = enableConsoleLog
         Logger.enableFileLog = enableFileLog
