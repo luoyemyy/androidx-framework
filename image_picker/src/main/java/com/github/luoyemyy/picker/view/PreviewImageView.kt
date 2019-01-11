@@ -9,7 +9,6 @@ import android.graphics.Matrix
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -27,16 +26,14 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
     private var mImageViewListeners = mutableListOf<ImageViewListener>()
     private val mScaleGestureDetector = ScaleGestureDetector(context, ScaleGestureListener())
     private val mGestureDetector = GestureDetector(context, GestureListener())
-    private var mChange = false
-    private var mFling = false
     private var mVWidth: Int = 0
     private var mVHeight: Int = 0
     private var mLastScaleX: Float = 0f
     private var mLastScaleY: Float = 0f
-    private var mAnimator: ValueAnimator? = null
     private val mAnimDuration = 240
     private val mMaxScale = 10f
     private val mMinScale = 0.5f
+    private var mCurrentAction: Action? = null
 
     init {
         viewTreeObserver.addOnGlobalLayoutListener {
@@ -67,30 +64,6 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
             mResetMatrix.set(imageMatrix)
             scaleType = ScaleType.MATRIX
             imageMatrix = mMatrix
-
-            Log.e("matrix", "reset : ${getResetValues().contentToString()}")
-            Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
-
-//            val vWidth = mVWidth
-//            val vHeight = mVHeight
-//
-//            mMatrix.reset()
-//
-//            val scale = if (dWidth <= vWidth && dHeight <= vHeight) {
-//                1.0f
-//            } else {
-//                Math.min(vWidth.toFloat() / dWidth.toFloat(), vHeight.toFloat() / dHeight.toFloat())
-//            }
-//
-//            val dx = Math.round((vWidth - dWidth * scale) * 0.5f).toFloat()
-//            val dy = Math.round((vHeight - dHeight * scale) * 0.5f).toFloat()
-//
-//            mMatrix.postScale(scale, scale)
-//            mMatrix.postTranslate(dx, dy)
-//
-//            mResetMatrix.set(mMatrix)
-//            scaleType = ScaleType.MATRIX
-//            imageMatrix = mMatrix
         }
     }
 
@@ -111,32 +84,67 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         return getMatrixValues(mMatrix)
     }
 
-    /**
-     * 重置当前图片
-     */
-    private fun reset() {
-        Log.e("matrix", "reset : ${getResetValues().contentToString()}")
-        Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
-        animator(mMatrix, mResetMatrix)
+    private fun equelsMatrix(matrix1: Matrix, matrix2: Matrix): Boolean {
+        val array1 = getMatrixValues(matrix1)
+        val array2 = getMatrixValues(matrix2)
+        return (0..8).all { array1[it] == array2[it] }
     }
 
-    private fun clearAnim() {
-        mAnimator?.apply {
-            if (isRunning) {
-                cancel()
+    fun addAction(action: Action) {
+        mCurrentAction?.apply {
+            if (action.canRun(this)) {
+                if (isRunning) {
+                    cancel()
+                }
+                mCurrentAction = action
+                action.start()
+            }
+        } ?: let {
+            mCurrentAction = action
+            action.start()
+        }
+    }
+
+    /**
+     * 接管事件
+     */
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (event == null) return false
+        mGestureDetector.onTouchEvent(event)
+        mScaleGestureDetector.onTouchEvent(event)
+
+        //停止手势时 先执行fling  然后检查缩放和边界
+        if (event.action and MotionEvent.ACTION_MASK == MotionEvent.ACTION_UP) {
+            (mCurrentAction as? FlingAction) ?: let {
+                addAction(LimitAction())
             }
         }
+        return true
+    }
+
+    /**
+     * 图片缩放
+     */
+    fun scale(scale: Float, x: Float, y: Float) {
+        mMatrix.postScale(scale, scale, x, y)
+        imageMatrix = mMatrix
+    }
+
+    /**
+     * 图片平移
+     */
+    fun translate(x: Float, y: Float) {
+        mMatrix.postTranslate(x, y)
+        imageMatrix = mMatrix
     }
 
     /**
      * 动画
      */
-    protected fun animator(startMatrix: Matrix, endMatrix: Matrix) {
-        val start = getMatrixValues(startMatrix)
-        val end = getMatrixValues(endMatrix)
-
-        clearAnim()
-        mAnimator = ValueAnimator().apply {
+    protected fun animator(startMatrix: Matrix, endMatrix: Matrix): ValueAnimator {
+        return ValueAnimator().apply {
+            val start = getMatrixValues(startMatrix)
+            val end = getMatrixValues(endMatrix)
             setObjectValues(start, end)
             duration = mAnimDuration.toLong()
             setEvaluator { fraction, _, _ ->
@@ -150,129 +158,100 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
                 mMatrix.set(it.animatedValue as Matrix)
                 imageMatrix = mMatrix
             }
-            addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationCancel(animation: Animator?) {
-                    Log.e("matrix", "cancel")
-                    Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
-                }
-
-                override fun onAnimationEnd(animation: Animator?) {
-                    Log.e("matrix", "end")
-                    Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
-                }
-            })
             start()
         }
     }
 
-    /**
-     * 接管事件
-     */
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        if (event == null) return false
-        mGestureDetector.onTouchEvent(event)
-        mScaleGestureDetector.onTouchEvent(event)
+    protected fun copyCurrentMatrix(): Matrix {
+        return Matrix(mMatrix)
+    }
 
-        if (mChange && event.action and MotionEvent.ACTION_MASK == MotionEvent.ACTION_UP) {
-            if (!mFling) {
-                changeEnd()
-            }
+    private fun getDrawableRect(): RectF? {
+        val dWidth = drawable?.intrinsicWidth ?: 0
+        val dHeight = drawable?.intrinsicHeight ?: 0
+        if (dWidth == 0 || dHeight == 0) return null
+        return RectF(0f, 0f, dWidth.toFloat(), dHeight.toFloat())
+    }
+
+    protected fun getBitmapRect(matrix: Matrix): RectF? {
+        return getDrawableRect()?.let {
+            matrix.mapRect(it)
+            it
         }
-        return true
     }
 
-    /**
-     * 图片有变化时，变化结束会调用该方法
-     */
-    open fun changeEnd() {
-        limit()
+    private fun getLimitRect(): RectF {
+        return RectF(0f, 0f, mVWidth.toFloat(), mVHeight.toFloat())
     }
 
-    /**
-     * 图片缩放
-     */
-    fun scale(scale: Float, x: Float, y: Float) {
-        mChange = true
-        mMatrix.postScale(scale, scale, x, y)
-        imageMatrix = mMatrix
-        Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
-    }
-
-    /**
-     * 图片平移
-     */
-    fun translate(x: Float, y: Float) {
-        mChange = true
-        mMatrix.postTranslate(x, y)
-        imageMatrix = mMatrix
-        Log.e("matrix", "matrix: ${getMatrixValues(mMatrix).contentToString()}")
-    }
 
     /**
      * 限制
      */
-    private fun limit() {
-        var anim = true
-        val endMatrix = Matrix(mMatrix)
-        val scale = getMatrixValues(mMatrix)[Matrix.MSCALE_X]
+    protected open fun calculateLimitMatrix(): Matrix? {
+        val endMatrix = copyCurrentMatrix()
+
+        //scale
+        val currentScale = getMatrixValues(mMatrix)[Matrix.MSCALE_X]
         val dScale = when {
-            scale > mMaxScale -> mMaxScale / scale
-            scale < mMinScale -> mMinScale / scale
+            currentScale > mMaxScale -> mMaxScale / currentScale
+            currentScale < mMinScale -> mMinScale / currentScale
             else -> 0f
         }
         if (dScale > 0) {
             endMatrix.postScale(dScale, dScale, mLastScaleX, mLastScaleY)
-        } else {
-            anim = false
         }
 
-        val dWidth = drawable?.intrinsicWidth ?: 0
-        val dHeight = drawable?.intrinsicHeight ?: 0
-        if (dWidth == 0 || dHeight == 0) return
-        val src = RectF(0f, 0f, dWidth.toFloat(), dHeight.toFloat())
-        endMatrix.mapRect(src)
+        val bitmapRect = getBitmapRect(endMatrix) ?: return null
+        val limitRect = getLimitRect()
 
-        val bWidth = src.right - src.left
-        val bHeight = src.bottom - src.top
+        //scroll
+        val (x, y) = calculateScroll(bitmapRect, limitRect)
+        endMatrix.postTranslate(x, y)
+        return endMatrix
+    }
 
-        val vWidth = width
-        val vHeight = height
-
+    protected fun calculateScroll(bitmapRect: RectF, limitRect: RectF): Pair<Float, Float> {
         val x = when {
-            bWidth <= vWidth -> when {
-                src.left < 0 -> -src.left
-                src.right > vWidth -> vWidth.toFloat() - src.right
+            //bitmap 宽度 小于 限制宽度
+            bitmapRect.right - bitmapRect.left <= limitRect.right - limitRect.left -> when {
+                //bitmap 左边 小于 限制左边 ，向右移差值
+                bitmapRect.left < limitRect.left -> limitRect.left - bitmapRect.left
+                //bitmap 右边 大于 限制右边 ，向左移差值
+                bitmapRect.right > limitRect.right -> limitRect.right - bitmapRect.right
                 else -> 0f
             }
-            bWidth > vWidth -> when {
-                src.left > 0 -> -src.left
-                src.right < vWidth -> vWidth.toFloat() - src.right
+            //bitmap 宽度 大于 限制宽度
+            bitmapRect.right - bitmapRect.left > limitRect.right - limitRect.left -> when {
+                //bitmap 左边 大于 限制左边 ，向左移差值
+                bitmapRect.left > limitRect.left -> limitRect.left - bitmapRect.left
+                //bitmap 右边 小于 限制右边 ，向右移差值
+                bitmapRect.right < limitRect.right -> limitRect.right - bitmapRect.right
                 else -> 0f
             }
             else -> 0f
         }
 
         val y = when {
-            bHeight <= vHeight -> when {
-                src.top < 0 -> -src.top
-                src.bottom > vHeight -> vHeight.toFloat() - src.bottom
+            //bitmap 高度度 小于 限制高度
+            bitmapRect.bottom - bitmapRect.top <= limitRect.bottom - limitRect.top -> when {
+                //bitmap 上边 小于 限制上边 ，向下移差值
+                bitmapRect.top < limitRect.top -> limitRect.top - bitmapRect.top
+                //bitmap 下边 大于 限制下边 ，向上移差值
+                bitmapRect.bottom > limitRect.bottom -> limitRect.bottom - bitmapRect.bottom
                 else -> 0f
             }
-            bHeight > vHeight -> when {
-                src.top > 0 -> -src.top
-                src.bottom < vHeight -> vHeight.toFloat() - src.bottom
+            //bitmap 高度 大于 限制高度
+            bitmapRect.bottom - bitmapRect.top > limitRect.bottom - limitRect.top -> when {
+                //bitmap 上边 大于 限制上边 ，向上移差值
+                bitmapRect.top > limitRect.top -> limitRect.top - bitmapRect.top
+                //bitmap 下边 小于 限制下边 ，向下移差值
+                bitmapRect.bottom < limitRect.bottom -> limitRect.bottom - bitmapRect.bottom
                 else -> 0f
             }
             else -> 0f
         }
-
-        if (x == 0f && y == 0f) {
-            anim = false
-        }
-        if (anim) {
-            endMatrix.postTranslate(x, y)
-            animator(mMatrix, endMatrix)
-        }
+        return Pair(x, y)
     }
 
     inner class ScaleGestureListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -285,7 +264,7 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         override fun onScale(detector: ScaleGestureDetector): Boolean {
             mLastScaleX = detector.focusX
             mLastScaleY = detector.focusY
-            scale(detector.scaleFactor, detector.focusX, detector.focusY)
+            addAction(ScaleAction(detector.scaleFactor, detector.focusX, detector.focusY))
             return true
         }
     }
@@ -293,21 +272,17 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
     inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
 
         override fun onDown(e: MotionEvent?): Boolean {
-            mChange = false
             setMatrixType()
-            clearAnim()
             return false
         }
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-            mImageViewListeners.forEach { it.onChange() }
-            translate(-distanceX, -distanceY)
+            addAction(ScrollAction(-distanceX, -distanceY))
             return true
         }
 
         override fun onDoubleTap(e: MotionEvent?): Boolean {
-            mImageViewListeners.forEach { it.onChange() }
-            reset()
+            addAction(ResetAction())
             return true
         }
 
@@ -317,21 +292,64 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         }
 
         override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
-            clearAnim()
-            mFling = true
-            var prev = 0.0f
-            var prevVelocityX = velocityX / 3000
-            var prevVelocityY = velocityY / 3000
-            val ax = prevVelocityX / mAnimDuration.toFloat()
-            val ay = prevVelocityY / mAnimDuration.toFloat()
+            addAction(FlingAction(velocityX, velocityY))
+            return true
+        }
+
+    }
+
+    inner class ScrollAction(private val dx: Float, private val dy: Float) : Action(1) {
+        override fun start() {
+            isRunning = true
+            translate(dx, dy)
+            isRunning = false
+        }
+    }
+
+    inner class ScaleAction(private val scale: Float, private val x: Float, private val y: Float) : Action(1) {
+        override fun start() {
+            isRunning = true
+            scale(scale, x, y)
+            isRunning = false
+        }
+    }
+
+    inner class ResetAction : Action(2) {
+
+        private lateinit var mAnimator: ValueAnimator
+
+        override fun start() {
+            mAnimator = animator(mMatrix, mResetMatrix).apply {
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        this@ResetAction.isRunning = false
+                    }
+                })
+            }
+            isRunning = true
+        }
+
+        override fun cancel() {
+            if (isRunning && this::mAnimator.isInitialized) {
+                mAnimator.cancel()
+                isRunning = false
+            }
+        }
+    }
+
+    inner class FlingAction(velocityX: Float, velocityY: Float) : Action(3) {
+        private lateinit var mAnimator: ValueAnimator
+        private var prev = 0.0f
+        private var prevVelocityX = velocityX / 3000
+        private var prevVelocityY = velocityY / 3000
+        private val ax = prevVelocityX / mAnimDuration.toFloat()
+        private val ay = prevVelocityY / mAnimDuration.toFloat()
+        override fun start() {
             mAnimator = ObjectAnimator.ofFloat(0f, mAnimDuration.toFloat()).apply {
                 interpolator = LinearInterpolator()
                 duration = mAnimDuration.toLong()
 
                 addUpdateListener {
-                    Log.e("onFling", "px：$prevVelocityX")
-                    Log.e("onFling", "py：$prevVelocityY")
-
                     val time = it.animatedValue as Float
                     val dt = time - prev
                     val dx = prevVelocityX * dt
@@ -341,24 +359,62 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
                     prevVelocityX -= ax * dt
                     prevVelocityY -= ay * dt
                     prev = time
-
-                    Log.e("onFling", "dx：$dx")
-                    Log.e("onFling", "dy：$dy")
-                    Log.e("onFling", "dt：$dt")
-                    Log.e("onFling", "     ")
                 }
 
                 addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator?) {
-                        mFling = false
-                        changeEnd()
+                        this@FlingAction.isRunning = false
+                        addAction(LimitAction())
                     }
                 })
                 start()
             }
-            return true
+            isRunning = true
         }
 
+        override fun cancel() {
+            if (isRunning && this::mAnimator.isInitialized) {
+                mAnimator.cancel()
+                isRunning = false
+            }
+        }
+
+    }
+
+    inner class LimitAction : Action(3) {
+        private lateinit var mAnimator: ValueAnimator
+        override fun start() {
+            val endMatrix = calculateLimitMatrix() ?: return
+            if (!equelsMatrix(mMatrix, endMatrix)) {
+                mAnimator = animator(mMatrix, endMatrix).apply {
+                    addListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            this@LimitAction.isRunning = false
+                        }
+                    })
+                }
+                isRunning = true
+            }
+        }
+
+        override fun cancel() {
+            if (isRunning && this::mAnimator.isInitialized) {
+                mAnimator.cancel()
+                isRunning = false
+            }
+        }
+
+    }
+
+    abstract inner class Action(private val priority: Int) {
+
+        var isRunning: Boolean = false
+
+        fun canRun(prevAction: Action) = !prevAction.isRunning || priority <= prevAction.priority
+
+        abstract fun start()
+
+        open fun cancel() {}
     }
 
 }

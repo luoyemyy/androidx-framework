@@ -30,7 +30,6 @@ class CropImageView(context: Context, attributeSet: AttributeSet?, defStyleAttr:
         style = Paint.Style.STROKE
     }
 
-
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         drawMask(canvas)
@@ -86,62 +85,34 @@ class CropImageView(context: Context, attributeSet: AttributeSet?, defStyleAttr:
         return RectF((width / 2 - x / 2).toFloat(), (height / 2 - y / 2).toFloat(), (width / 2 + x / 2).toFloat(), (height / 2 + y / 2).toFloat())
     }
 
-    /**
-     * 变化结束，保证图片完全覆盖裁剪区域
-     */
-    override fun changeEnd() {
-        matchBounds()
-    }
+    override fun calculateLimitMatrix(): Matrix? {
 
-    /**
-     * 保证图片完全覆盖裁剪区域
-     */
-    private fun matchBounds() {
-        val dWidth = drawable?.intrinsicWidth ?: 0
-        val dHeight = drawable?.intrinsicHeight ?: 0
-        if (dWidth == 0 || dHeight == 0) return
-        val src = RectF(0f, 0f, dWidth.toFloat(), dHeight.toFloat())
-        var scale = RectF(src)
-        val matrix = Matrix(imageMatrix).apply { mapRect(src) }
-        val w = src.right - src.left
-        val h = src.bottom - src.top
-        val crop = calculateCropSpace()
-        val cw = crop.right - crop.left
-        val ch = crop.bottom - crop.top
+        val endMatrix = copyCurrentMatrix()
+        var bitmapRect = getBitmapRect(endMatrix) ?: return null
+        val limitRect = calculateCropSpace()
 
-        val startValues = getMatrixValues(matrix)
+        val bitmapWidth = bitmapRect.right - bitmapRect.left
+        val bitmapHeight = bitmapRect.bottom - bitmapRect.top
+        val limitWidth = limitRect.right - limitRect.left
+        val limitHeight = limitRect.bottom - limitRect.top
+        val dw = bitmapWidth - limitWidth
+        val dh = bitmapHeight - limitHeight
 
-        //缩放保持高度和宽度不小于裁剪区域
-        val dw = w - cw
-        val dh = h - ch
+        //缩放  保持高度和宽度不小于裁剪区域
         if (dw < 0 || dh < 0) {
-            val s = if (dw < dh) {
-                Math.ceil(cw.toDouble()) / w
+            val scale = if (dw < dh) {
+                Math.ceil(limitHeight.toDouble()) / bitmapWidth
             } else {
-                Math.ceil(ch.toDouble()) / h
+                Math.ceil(limitHeight.toDouble()) / bitmapHeight
             }.toFloat()
-            matrix.postScale(s, s)
-            matrix.mapRect(scale)
-        } else {
-            scale = src
+            endMatrix.postScale(scale, scale, bitmapRect.left + bitmapWidth / 2, bitmapRect.top + bitmapHeight / 2)
+            bitmapRect = getBitmapRect(endMatrix) ?: return null
         }
 
-        //平移保证裁剪区域在图片内
-        if (scale.left > crop.left) {
-            matrix.postTranslate(crop.left - scale.left, 0f)
-        } else if (scale.right < crop.right) {
-            matrix.postTranslate(crop.right - scale.right, 0f)
-        }
-        if (scale.top > crop.top) {
-            matrix.postTranslate(0f, crop.top - scale.top)
-        } else if (scale.bottom < crop.bottom) {
-            matrix.postTranslate(0f, crop.bottom - scale.bottom)
-        }
-
-        val endValues = getMatrixValues(matrix)
-        if (startValues.toString() != endValues.toString()) {
-            animator(Matrix().apply { setValues(startValues) }, matrix)
-        }
+        //平移
+        val (x, y) = calculateScroll(bitmapRect, limitRect)
+        endMatrix.postTranslate(x, y)
+        return endMatrix
     }
 
     private fun checkBounds(): Boolean {
@@ -164,7 +135,7 @@ class CropImageView(context: Context, attributeSet: AttributeSet?, defStyleAttr:
     fun crop(failure: ((Throwable?) -> Unit)? = null, success: (Bitmap) -> Unit) {
         if (!checkBounds()) {
             failure?.invoke(null)
-            matchBounds()
+            addAction(LimitAction())
             return
         }
         AsyncTask.execute {
