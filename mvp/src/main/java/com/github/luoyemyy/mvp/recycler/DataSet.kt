@@ -354,8 +354,8 @@ class DataSet<T> {
                     Collections.swap(mData, it, it + 1)
                 }
             } else if (startContentPosition > endContentPosition) {
-                (startContentPosition downTo endContentPosition - 1).forEach {
-                    Collections.swap(mData, it, it + 1)
+                (startContentPosition downTo endContentPosition + 1).forEach {
+                    Collections.swap(mData, it, it - 1)
                 }
             }
         }.dispatchUpdatesTo(adapter)
