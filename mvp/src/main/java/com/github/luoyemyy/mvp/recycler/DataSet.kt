@@ -4,6 +4,7 @@ package com.github.luoyemyy.mvp.recycler
 
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import java.util.*
 
 class DataSet<T> {
 
@@ -338,6 +339,37 @@ class DataSet<T> {
         if (position >= 0) {
             adapter.notifyItemChanged(position, payload)
         }
+    }
+
+    /**
+     * 将 content 从 startItemPosition 移动到 endItemPosition
+     */
+    fun move(startItemPosition: Int, endItemPosition: Int, adapter: RecyclerView.Adapter<*>) {
+        if (startItemPosition == endItemPosition) return
+        val startContentPosition = mapToContentPosition(startItemPosition)
+        val endContentPosition = mapToContentPosition(endItemPosition)
+        postData {
+            if (startContentPosition < endContentPosition) {
+                (startContentPosition until endContentPosition).forEach {
+                    Collections.swap(mData, it, it + 1)
+                }
+            } else if (startContentPosition > endContentPosition) {
+                (startContentPosition downTo endContentPosition - 1).forEach {
+                    Collections.swap(mData, it, it + 1)
+                }
+            }
+        }.dispatchUpdatesTo(adapter)
+    }
+
+    /**
+     *
+     * itemPosition -> contentPosition
+     * itemPosition 包含其他额外的item的位置
+     * contentPosition 全部内容的位置
+     *
+     */
+    private fun mapToContentPosition(itemPosition: Int): Int {
+        return item(itemPosition)?.let { mData.indexOf(it) } ?: -1
     }
 
     /**
