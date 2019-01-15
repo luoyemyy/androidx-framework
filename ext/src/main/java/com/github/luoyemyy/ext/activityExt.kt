@@ -80,10 +80,10 @@ fun ViewGroup.pointInEditText(x: Int, y: Int): Boolean {
 /**
  * 点击editText之外的区域自动关闭键盘，并取消焦点
  */
-fun autoCloseKeyboardAndClearFocus(activity: Activity, ev: MotionEvent?, window: Window) {
+fun autoCloseKeyboardAndClearFocus(activity: Activity, ev: MotionEvent?) {
     val x = ev?.rawX?.toInt() ?: -1
     val y = ev?.rawY?.toInt() ?: -1
-    val viewGroup = window.peekDecorView() as? ViewGroup
+    val viewGroup = activity.window.peekDecorView() as? ViewGroup
     if (x >= 0 && y >= 0 && viewGroup != null && !viewGroup.pointInEditText(x, y)) {
         activity.hideKeyboard()
         (activity.currentFocus as? EditText)?.clearFocus()
