@@ -17,11 +17,11 @@ class StatusActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_status)
 
-        mBinding.imageView.setImageDrawable(CircularProgressDrawable(this).apply {
-            setStyle(CircularProgressDrawable.LARGE)
-            setColorSchemeColors(ContextCompat.getColor(applicationContext, R.color.colorAccent))
-            start()
-        })
+//        mBinding.imageView.setImageDrawable(CircularProgressDrawable(this).apply {
+//            setStyle(CircularProgressDrawable.LARGE)
+//            setColorSchemeColors(ContextCompat.getColor(applicationContext, R.color.colorAccent))
+//            start()
+//        })
 
     }
 

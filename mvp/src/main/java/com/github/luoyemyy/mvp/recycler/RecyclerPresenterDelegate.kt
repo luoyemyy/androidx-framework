@@ -1,6 +1,7 @@
 package com.github.luoyemyy.mvp.recycler
 
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.*
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -219,6 +220,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
                         val list = try {
                             presenter.loadData(loadType, mDataSet.getPaging(), bundle, search)
                         } catch (e: Throwable) {
+                            Log.e("PresenterDelegate", "loadData:  ", e)
                             null
                         }
                         it.onSuccess(list ?: listOf())
