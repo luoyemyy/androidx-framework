@@ -20,16 +20,19 @@ object Bus {
     }
 
     /**
-     * 注册观察者
+     * 注册观察者，如果当前callback已经被注册过，则忽略
      *
      * @param callback
      */
     @MainThread
     fun register(callback: Callback) {
-        mCallbacks.add(callback)
+        if (mCallbacks.none { it == callback }) {
+            mCallbacks.add(callback)
+        }
     }
 
     /**
+     * 一个事件只能有一个观察者
      * 注册观察者,如果此事件有观察者，先移除已存在的，然后设置新的
      */
     @MainThread
