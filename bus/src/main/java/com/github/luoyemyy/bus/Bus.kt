@@ -15,8 +15,43 @@ object Bus {
     private val mCallbacks = mutableListOf<Callback>()
     private val mHandler = Handler(Looper.getMainLooper())
 
+    private val mDebugListeners = mutableListOf<DebugListener>()
+
     interface Callback : BusResult {
         fun interceptEvent(): String
+    }
+
+    //debug
+    interface DebugListener {
+        fun onRegister(currentCallback: Callback, allCallbacks: List<Callback>)
+        fun onUnRegister(currentCallback: Callback, allCallbacks: List<Callback>)
+        fun onPost(event: String, callbacks: List<Callback>)
+    }
+
+    //debug
+    fun addDebugListener(debugListener: DebugListener) {
+        mDebugListeners.add(debugListener)
+    }
+
+    //debug
+    private fun debugOnRegister(callback: Callback) {
+        mDebugListeners.forEach {
+            it.onRegister(callback, mCallbacks)
+        }
+    }
+
+    //debug
+    private fun debugOnUnRegister(callback: Callback) {
+        mDebugListeners.forEach {
+            it.onUnRegister(callback, mCallbacks)
+        }
+    }
+
+    //debug
+    private fun debugOnPost(event: String, callbacks: List<Callback>) {
+        mDebugListeners.forEach {
+            it.onPost(event, callbacks)
+        }
     }
 
     /**
@@ -28,6 +63,8 @@ object Bus {
     fun register(callback: Callback) {
         if (mCallbacks.none { it == callback }) {
             mCallbacks.add(callback)
+            //debug
+            debugOnRegister(callback)
         }
     }
 
@@ -39,6 +76,8 @@ object Bus {
     fun replaceRegister(callback: Callback) {
         mCallbacks.removeAll { it.interceptEvent() == callback.interceptEvent() }
         mCallbacks.add(callback)
+        //debug
+        debugOnRegister(callback)
     }
 
     /**
@@ -49,6 +88,8 @@ object Bus {
     @MainThread
     fun unRegister(callback: Callback) {
         mCallbacks.remove(callback)
+        //debug
+        debugOnUnRegister(callback)
     }
 
     /**
@@ -57,7 +98,9 @@ object Bus {
     fun post(event: String, intValue: Int = 0, longValue: Long = 0L, boolValue: Boolean = false, stringValue: String? = null, extra: Bundle? = null) {
         mHandler.post {
             val msg = BusMsg(event, intValue, longValue, boolValue, stringValue, extra)
-            mCallbacks.filter { it.interceptEvent() == event }.forEach { it.busResult(msg.event, msg) }
+            mCallbacks.filter { it.interceptEvent() == event }.apply {
+                debugOnPost(event, this)
+            }.forEach { it.busResult(msg.event, msg) }
         }
     }
 

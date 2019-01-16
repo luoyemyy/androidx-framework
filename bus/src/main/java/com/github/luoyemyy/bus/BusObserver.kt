@@ -53,6 +53,10 @@ internal class BusObserver constructor(private val lifecycle: Lifecycle, private
 
     data class EventInfo(val event: String, val msg: BusMsg)
 
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
+
     override fun toString(): String {
         return mResult.hashCode().toString()
     }
