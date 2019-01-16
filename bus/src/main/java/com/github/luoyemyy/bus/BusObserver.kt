@@ -7,7 +7,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 
-
 /**
  * bus 管理注册器
  * 注册后，此事件监听会绑定生命周期，不用手动去释放
@@ -53,4 +52,8 @@ internal class BusObserver constructor(private val lifecycle: Lifecycle, private
     }
 
     data class EventInfo(val event: String, val msg: BusMsg)
+
+    override fun toString(): String {
+        return mResult.hashCode().toString()
+    }
 }
