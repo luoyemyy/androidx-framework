@@ -3,7 +3,6 @@ package com.github.luoyemyy.mvp
 import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 
 /**
  *
@@ -33,9 +32,9 @@ import androidx.lifecycle.MutableLiveData
  *  }
  *
  */
-abstract class AbstractPresenter<T>(app: Application) : AndroidViewModel(app) {
+abstract class AbstractPresenter<A : Action>(app: Application) : AndroidViewModel(app) {
 
-    val data = MutableLiveData<T>()
+    val liveData = PresenterLiveData<A>()
 
     private var mInitialized = false
 
