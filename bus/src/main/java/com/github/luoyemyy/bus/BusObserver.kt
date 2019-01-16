@@ -56,4 +56,8 @@ internal class BusObserver constructor(private val lifecycle: Lifecycle, private
     override fun toString(): String {
         return mResult.hashCode().toString()
     }
+
+    override fun equals(other: Any?): Boolean {
+        return toString() == other?.toString()
+    }
 }
