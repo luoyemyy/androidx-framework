@@ -61,7 +61,7 @@ object Bus {
      */
     @MainThread
     fun register(callback: Callback) {
-        if (mCallbacks.none { it == callback }) {
+        if (mCallbacks.none { it == callback && it.interceptEvent() == callback.interceptEvent() }) {
             mCallbacks.add(callback)
             //debug
             debugOnRegister(callback)
