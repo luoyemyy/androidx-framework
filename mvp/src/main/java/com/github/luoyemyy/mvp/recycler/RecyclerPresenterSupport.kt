@@ -22,6 +22,8 @@ interface RecyclerPresenterSupport<T> {
 
     fun isInitialized(): Boolean
 
+    fun setInitialized()
+
     /**
      * 初始化第一页数据，并展示
      * @param bundle        初始化参数

@@ -60,6 +60,10 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
 
     fun isInitialized(): Boolean = mInitialized
 
+    fun setInitialized() {
+        mInitialized = true
+    }
+
     private fun startRefresh() {
         mLiveDataRefreshState.value = true
     }
@@ -86,7 +90,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
     }
 
     fun loadInit(bundle: Bundle?) {
-        if (mInitialized) {
+        if (isInitialized()) {
             mAdapter?.attachToRecyclerView(mScrollPosition, mScrollOffset)
         } else if (beforeLoadInit(bundle)) {
             loadData(LoadType.init(), bundle)
@@ -100,7 +104,7 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
                 adapter.afterLoadInit(ok, list)
                 adapter.attachToRecyclerView(-1, 0)
                 endRefresh()
-                mInitialized = true
+                setInitialized()
             }
         }
     }

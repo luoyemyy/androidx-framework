@@ -37,6 +37,14 @@ abstract class AbstractPresenter<T>(app: Application) : AndroidViewModel(app) {
 
     val data = MutableLiveData<T>()
 
+    private var mInitialized = false
+
+    fun isInitialized(): Boolean = mInitialized
+
+    fun setInitialized() {
+        mInitialized = true
+    }
+
     open fun load(bundle: Bundle? = null) {}
 
 }

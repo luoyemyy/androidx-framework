@@ -34,6 +34,10 @@ abstract class AbstractRecyclerPresenter<T>(app: Application) : AndroidViewModel
         return mDelegate.isInitialized()
     }
 
+    override fun setInitialized() {
+        mDelegate.setInitialized()
+    }
+
     override fun loadInit(bundle: Bundle?) {
         mDelegate.loadInit(bundle)
     }
