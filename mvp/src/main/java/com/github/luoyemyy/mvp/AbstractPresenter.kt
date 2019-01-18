@@ -3,7 +3,6 @@ package com.github.luoyemyy.mvp
 import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
@@ -37,8 +36,8 @@ import androidx.lifecycle.Observer
  */
 abstract class AbstractPresenter<T>(app: Application) : BasePresenter(app) {
 
-    protected val data: LiveData<T> by lazy { MutableLiveData<T>() }
-    protected val list: LiveData<List<T>> by lazy { MutableLiveData<List<T>>() }
+    protected val data: MutableLiveData<T> by lazy { MutableLiveData<T>() }
+    protected val list: MutableLiveData<List<T>> by lazy { MutableLiveData<List<T>>() }
 
     private var mInitialized = false
 
