@@ -1,6 +1,5 @@
 package com.github.luoyemyy.framework.test
 
-import android.Manifest
 import android.app.Application
 import android.content.Intent
 import android.graphics.Color
@@ -28,7 +27,6 @@ import com.github.luoyemyy.framework.test.status.StatusActivity
 import com.github.luoyemyy.framework.test.transition.TransitionActivity
 import com.github.luoyemyy.mvp.getPresenter
 import com.github.luoyemyy.mvp.recycler.*
-import com.github.luoyemyy.permission.PermissionHelper
 
 
 class MainActivity : AppCompatActivity(), BusResult {
@@ -82,11 +80,11 @@ class MainActivity : AppCompatActivity(), BusResult {
                 3 -> startActivity(Intent(this@MainActivity, MvpActivity::class.java))
                 5 -> startActivity(Intent(this@MainActivity, RecyclerActivity::class.java))
                 6 -> {
-                    PermissionHelper.withPass {
-                        toast(message = "ok")
-                    }.withDenied { _, _ ->
-                        toast(message = "fail")
-                    }.request(this@MainActivity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET))
+//                    PermissionHelper.withPass {
+//                        toast(message = "ok")
+//                    }.withDenied { _, _ ->
+//                        toast(message = "fail")
+//                    }.request(this@MainActivity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET))
                 }
                 7 -> startActivity(Intent(this@MainActivity, TransitionActivity::class.java))
                 8 -> startActivity(Intent(this@MainActivity, ExoPlayerActivity::class.java))
@@ -108,6 +106,7 @@ class MainActivity : AppCompatActivity(), BusResult {
                         startActivityForResult(intent, 1)
                     }
                 }
+                17 -> throw NullPointerException("null")
 
             }
         }
@@ -133,7 +132,8 @@ class MainActivity : AppCompatActivity(), BusResult {
                     Action(12, "design"),
                     Action(13, "debug"),
                     Action(14, "picker"),
-                    Action(15, "nav")
+                    Action(15, "nav"),
+                    Action(17, "null异常")
             )
         }
     }

@@ -4,18 +4,17 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.ViewModelProviders
+import com.github.luoyemyy.bus.Bus
 
 internal class PermissionFragment : Fragment() {
 
     companion object {
 
-        const val REQUEST_PERMISSION = "requestPermission"
-
-        fun startPermissionFragment(fragmentManager: FragmentManager, requestPermission: Array<String>) {
+        fun startPermissionFragment(fragmentManager: FragmentManager, event: String, requestPermission: Array<String>) {
             val permissionFragment = PermissionFragment().apply {
                 arguments = Bundle().apply {
-                    putStringArray(REQUEST_PERMISSION, requestPermission)
+                    putString(PermissionHelper.PERMISSION_EVENT, event)
+                    putStringArray(PermissionHelper.PERMISSIONS, requestPermission)
                 }
             }
             fragmentManager.beginTransaction().add(permissionFragment, null).commit()
@@ -25,23 +24,27 @@ internal class PermissionFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val permissions = arguments?.getStringArray(REQUEST_PERMISSION)
+        val permissions = arguments?.getStringArray(PermissionHelper.PERMISSIONS)
         if (permissions != null) {
-            requestPermissions(permissions, PermissionHelper.REQUEST_CODE)
+            requestPermissions(permissions, 1)
         } else {
             closeRequest()
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == PermissionHelper.REQUEST_CODE) {
-            val deniedList = mutableListOf<String>()
-            grantResults.forEachIndexed { index, i ->
-                if (i == PackageManager.PERMISSION_DENIED) {
-                    deniedList.add(permissions[index])
+        if (requestCode == 1) {
+            arguments?.getString(PermissionHelper.PERMISSION_EVENT)?.apply {
+                val deniedList = mutableListOf<String>()
+                grantResults.forEachIndexed { index, i ->
+                    if (i == PackageManager.PERMISSION_DENIED) {
+                        deniedList.add(permissions[index])
+                    }
                 }
+                Bus.post(this, extra = Bundle().apply {
+                    putStringArray(PermissionHelper.PERMISSIONS, deniedList.toTypedArray())
+                })
             }
-            ViewModelProviders.of(requireActivity()).get(PermissionPresenter::class.java).postValue(deniedList.toTypedArray())
         }
         closeRequest()
     }

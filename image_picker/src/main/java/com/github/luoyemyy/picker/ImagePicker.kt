@@ -126,28 +126,28 @@ class ImagePicker private constructor() {
     fun picker(activity: FragmentActivity, callback: (List<String>?) -> Unit) {
         when (option.pickerType) {
             0 -> {
-                PermissionHelper.withPass {
+                PermissionHelper.build(activity, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE).pass {
                     toAlbumOrCapture(activity, callback)
-                }.withDenied { future, _ ->
-                    future.toSettings(activity, activity.getString(R.string.image_picker_need_camera_storage))
+                }.denied {
+                    PermissionHelper.toSettings(activity, activity.getString(R.string.image_picker_need_camera_storage))
                     Log.e("ImagePicker", "权限不足，需要同时拥有相机和文件读写的权限")
-                }.request(activity, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                }.request()
             }
             1 -> {
-                PermissionHelper.withPass {
+                PermissionHelper.build(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE).pass {
                     toAlbum(activity, callback)
-                }.withDenied { future, _ ->
-                    future.toSettings(activity, activity.getString(R.string.image_picker_need_storage))
+                }.denied {
+                    PermissionHelper.toSettings(activity, activity.getString(R.string.image_picker_need_storage))
                     Log.e("ImagePicker", "权限不足，需要拥有文件读写的权限")
-                }.request(activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                }.request()
             }
             2 -> {
-                PermissionHelper.withPass {
+                PermissionHelper.build(activity, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE).pass {
                     toCapture(activity, callback)
-                }.withDenied { future, _ ->
-                    future.toSettings(activity, activity.getString(R.string.image_picker_need_camera_storage))
+                }.denied {
+                    PermissionHelper.toSettings(activity, activity.getString(R.string.image_picker_need_camera_storage))
                     Log.e("ImagePicker", "权限不足，需要同时拥有相机和文件读写的权限")
-                }.request(activity, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                }.request()
             }
         }
     }

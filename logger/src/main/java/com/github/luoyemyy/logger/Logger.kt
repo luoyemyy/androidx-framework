@@ -1,6 +1,10 @@
 package com.github.luoyemyy.logger
 
 import android.util.Log
+import com.github.luoyemyy.handler.ThreadHandler
+import java.io.FileWriter
+import java.io.PrintWriter
+import java.util.*
 
 object Logger {
 
@@ -38,7 +42,39 @@ object Logger {
                 Log.w(tag, "logPath is null")
                 return
             }
-            LogWriter.write(e, Thread.currentThread().name, level, tag, msg, path)
+            write(e, Thread.currentThread().name, level, tag, msg, path)
         }
+    }
+
+    private fun write(throwable: Throwable?, threadName: String, level: String, tag: String, msg: String, path: String) {
+        ThreadHandler.post {
+            try {
+                val (logFileName, logDateTime) = getDateKey()
+                FileWriter("$path$logFileName.log.txt", true).use { sw ->
+                    PrintWriter(sw, true).use { writer ->
+                        writer.println()
+                        writer.println("$logDateTime [$threadName]-$level/$tag:$msg")
+                        var e = throwable
+                        while (e != null) {
+                            e.printStackTrace(writer)
+                            e = e.cause
+                        }
+                    }
+                }
+            } catch (e: Throwable) {
+                Log.e("LogWriter", "write:  ", e)
+            }
+        }
+    }
+
+    private fun getDateKey(): Pair<String, String> {
+        val calender = Calendar.getInstance()
+        val year = calender.get(Calendar.YEAR)
+        val month = calender.get(Calendar.MONTH) + 1
+        val day = calender.get(Calendar.DAY_OF_MONTH)
+        val hour = calender.get(Calendar.HOUR_OF_DAY)
+        val minute = calender.get(Calendar.MINUTE)
+        val second = calender.get(Calendar.SECOND)
+        return Pair("$year-$month-$day", "$year-$month-$day $hour:$minute:$second")
     }
 }

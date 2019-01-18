@@ -5,10 +5,10 @@ import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
+import com.github.luoyemyy.mvp.BasePresenter
 
-abstract class AbstractRecyclerPresenter<T>(app: Application) : AndroidViewModel(app), RecyclerPresenterSupport<T>, RecyclerPresenterWrapper<T> {
+abstract class AbstractRecyclerPresenter<T>(app: Application) : BasePresenter(app), RecyclerPresenterSupport<T>, RecyclerPresenterWrapper<T> {
 
     private val mDelegate: RecyclerPresenterDelegate<T> = RecyclerPresenterDelegate()
 

@@ -2,7 +2,10 @@ package com.github.luoyemyy.mvp
 
 import android.app.Application
 import android.os.Bundle
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 
 /**
  *
@@ -32,11 +35,20 @@ import androidx.lifecycle.AndroidViewModel
  *  }
  *
  */
-abstract class AbstractPresenter<A : Action>(app: Application) : AndroidViewModel(app) {
+abstract class AbstractPresenter<T>(app: Application) : BasePresenter(app) {
 
-    val liveData = PresenterLiveData<A>()
+    protected val data: LiveData<T> by lazy { MutableLiveData<T>() }
+    protected val list: LiveData<List<T>> by lazy { MutableLiveData<List<T>>() }
 
     private var mInitialized = false
+
+    fun setDataObserver(owner: LifecycleOwner, observer: Observer<T>) {
+        data.observe(owner, observer)
+    }
+
+    fun setListObserver(owner: LifecycleOwner, observer: Observer<List<T>>) {
+        list.observe(owner, observer)
+    }
 
     fun isInitialized(): Boolean = mInitialized
 

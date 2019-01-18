@@ -30,6 +30,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.fragment:fragment:$support_version"
     implementation "androidx.appcompat:appcompat:$compat_version"
+    implementation project(':bus')
 }
 
 task sourcesJar(type: Jar) {

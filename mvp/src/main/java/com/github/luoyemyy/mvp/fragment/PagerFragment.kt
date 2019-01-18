@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 /**
  * 第一次显示的时候才开始加载数据，用于ViewPager中
  */
-abstract class PagerFragment : Fragment() {
+abstract class PagerFragment : Fragment(){
 
     private var loaded = false
 
