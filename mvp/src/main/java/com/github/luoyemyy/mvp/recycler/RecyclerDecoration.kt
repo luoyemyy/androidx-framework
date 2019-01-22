@@ -8,7 +8,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.roundToInt
 
-class RecyclerDecoration private constructor(private val type: Int, private val context: Context, space: Int, spaceUnitPx: Boolean) : RecyclerView.ItemDecoration() {
+class RecyclerDecoration private constructor(private val type: Int, private val context: Context, space: Int, spacePxUnit: Boolean) : RecyclerView.ItemDecoration() {
 
     companion object {
 
@@ -19,69 +19,69 @@ class RecyclerDecoration private constructor(private val type: Int, private val 
         /**
          * @param context
          * @param space         分割距离
-         * @param spaceUnit     space的单位 true px false dp
+         * @param spacePxUnit   space的单位 true px false dp
          */
-        fun beginEnd(context: Context, space: Int = 1, spaceUnit: Boolean = false): RecyclerDecoration {
-            return RecyclerDecoration(BEGIN or END, context, space, spaceUnit)
+        fun beginEnd(context: Context, space: Int = 1, spacePxUnit: Boolean = false): RecyclerDecoration {
+            return RecyclerDecoration(BEGIN or END, context, space, spacePxUnit)
         }
 
         /**
          * @param context
          * @param space         分割距离
-         * @param spaceUnit     space的单位 true px false dp
+         * @param spacePxUnit   space的单位 true px false dp
          */
-        fun middleEnd(context: Context, space: Int = 1, spaceUnit: Boolean = false): RecyclerDecoration {
-            return RecyclerDecoration(MIDDLE or END, context, space, spaceUnit)
+        fun middleEnd(context: Context, space: Int = 1, spacePxUnit: Boolean = false): RecyclerDecoration {
+            return RecyclerDecoration(MIDDLE or END, context, space, spacePxUnit)
         }
 
         /**
          * @param context
          * @param space         分割距离
-         * @param spaceUnit     space的单位 true px false dp
+         * @param spacePxUnit   space的单位 true px false dp
          */
-        fun beginMiddle(context: Context, space: Int = 1, spaceUnit: Boolean = false): RecyclerDecoration {
-            return RecyclerDecoration(BEGIN or MIDDLE, context, space, spaceUnit)
+        fun beginMiddle(context: Context, space: Int = 1, spacePxUnit: Boolean = false): RecyclerDecoration {
+            return RecyclerDecoration(BEGIN or MIDDLE, context, space, spacePxUnit)
         }
 
         /**
          * @param context
          * @param space         分割距离
-         * @param spaceUnit     space的单位 true px false dp
+         * @param spacePxUnit   space的单位 true px false dp
          */
-        fun beginMiddleEnd(context: Context, space: Int = 1, spaceUnit: Boolean = false): RecyclerDecoration {
-            return RecyclerDecoration(BEGIN or MIDDLE or END, context, space, spaceUnit)
+        fun beginMiddleEnd(context: Context, space: Int = 1, spacePxUnit: Boolean = false): RecyclerDecoration {
+            return RecyclerDecoration(BEGIN or MIDDLE or END, context, space, spacePxUnit)
         }
 
         /**
          * @param context
          * @param space         分割距离
-         * @param spaceUnit     space的单位 true px false dp
+         * @param spacePxUnit   space的单位 true px false dp
          */
-        fun begin(context: Context, space: Int = 1, spaceUnit: Boolean = false): RecyclerDecoration {
-            return RecyclerDecoration(BEGIN, context, space, spaceUnit)
+        fun begin(context: Context, space: Int = 1, spacePxUnit: Boolean = false): RecyclerDecoration {
+            return RecyclerDecoration(BEGIN, context, space, spacePxUnit)
         }
 
         /**
          * @param context
          * @param space         分割距离
-         * @param spaceUnit     space的单位 true px false dp
+         * @param spacePxUnit   space的单位 true px false dp
          */
-        fun middle(context: Context, space: Int = 1, spaceUnit: Boolean = false): RecyclerDecoration {
-            return RecyclerDecoration(MIDDLE, context, space, spaceUnit)
+        fun middle(context: Context, space: Int = 1, spacePxUnit: Boolean = false): RecyclerDecoration {
+            return RecyclerDecoration(MIDDLE, context, space, spacePxUnit)
         }
 
         /**
          * @param context
          * @param space         分割距离
-         * @param spaceUnit     space的单位 true px false dp
+         * @param spacePxUnit   space的单位 true px false dp
          */
-        fun end(context: Context, space: Int = 1, spaceUnit: Boolean = false): RecyclerDecoration {
-            return RecyclerDecoration(END, context, space, spaceUnit)
+        fun end(context: Context, space: Int = 1, spacePxUnit: Boolean = false): RecyclerDecoration {
+            return RecyclerDecoration(END, context, space, spacePxUnit)
         }
     }
 
 
-    private var mSpacePx = if (spaceUnitPx) space else dp2px(space)
+    private var mSpacePx = if (spacePxUnit) space else dp2px(space)
 
     private var mDrawDivider: Boolean = false
     private var mLeftPx: Int = 0
@@ -92,7 +92,7 @@ class RecyclerDecoration private constructor(private val type: Int, private val 
      * @param dividerColor  分割颜色  0 不绘制分割线
      * @param left          分割线左边padding
      * @param right         分割线右边padding
-     * @param paddingUnitPx   分割线padding的单位 true px false dp
+     * @param paddingUnitPx 分割线padding的单位 true px false dp
      */
     fun drawDivider(dividerColor: Int = 0x1e000000, left: Int = 0, right: Int = 0, paddingUnitPx: Boolean = false): RecyclerDecoration {
         if (dividerColor != 0) {

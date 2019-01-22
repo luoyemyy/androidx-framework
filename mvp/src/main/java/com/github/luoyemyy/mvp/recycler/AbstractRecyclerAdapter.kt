@@ -1,16 +1,39 @@
 package com.github.luoyemyy.mvp.recycler
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
+import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 
 
-abstract class AbstractMultiRecyclerAdapter(recyclerView: RecyclerView) : BaseRecyclerAdapter<Any, ViewDataBinding>(recyclerView)
+abstract class AbstractMultiRecyclerAdapter(recyclerView: RecyclerView) : BaseRecyclerAdapter<Any, ViewDataBinding>(recyclerView) {
+
+    @LayoutRes
+    abstract fun getLayoutId(viewType: Int): Int
+
+    override fun createContentView(inflater: LayoutInflater, parent: ViewGroup, viewType: Int): ViewDataBinding? {
+        val layoutId = getLayoutId(viewType)
+        return if (layoutId > 0) {
+            DataBindingUtil.inflate(inflater, layoutId, parent, false)
+        } else {
+            null
+        }
+    }
+}
 
 abstract class AbstractSingleRecyclerAdapter<T, BIND : ViewDataBinding>(recyclerView: RecyclerView) : BaseRecyclerAdapter<T, BIND>(recyclerView) {
 
+    @LayoutRes
+    abstract fun getLayoutId(): Int
+
     override fun getContentType(position: Int, item: T?): Int {
         return DataSet.CONTENT
+    }
+
+    override fun createContentView(inflater: LayoutInflater, parent: ViewGroup, viewType: Int): BIND? {
+        return DataBindingUtil.inflate(inflater, getLayoutId(), parent, false)
     }
 }
 

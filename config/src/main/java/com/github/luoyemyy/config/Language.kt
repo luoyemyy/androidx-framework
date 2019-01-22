@@ -30,6 +30,9 @@ object Language {
      */
     @JvmStatic
     fun attachBaseContext(context: Context): Context {
+        if (isAuto(context)) {
+            return context
+        }
         val config = context.resources.configuration
         val local = getAppLocal(context)
         return if (isGeApi24()) {
@@ -46,8 +49,8 @@ object Language {
      * Application#onConfigurationChanged(Configuration)
      */
     @JvmStatic
-    fun systemLanguageChange(context: Context) {
-        if (getAppKey(context) == AUTO) {
+    fun systemLanguageChanged(context: Context) {
+        if (isAuto(context)) {
             System.exit(0)
         }
     }
@@ -113,6 +116,8 @@ object Language {
     private fun spf(context: Context): SharedPreferences = context.getSharedPreferences(LANGUAGE_CONFIG, Context.MODE_PRIVATE)
 
     private fun isGeApi24() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+
+    private fun isAuto(context: Context) = getAppKey(context) == AUTO
 
 }
 
