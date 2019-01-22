@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class AbstractMultiRecyclerAdapter(recyclerView: RecyclerView) : BaseRecyclerAdapter<Any, ViewDataBinding>(recyclerView) {
 
     @LayoutRes
-    abstract fun getLayoutId(viewType: Int): Int
+    open fun getLayoutId(viewType: Int): Int = 0
 
     override fun createContentView(inflater: LayoutInflater, parent: ViewGroup, viewType: Int): ViewDataBinding? {
         val layoutId = getLayoutId(viewType)
@@ -26,7 +26,7 @@ abstract class AbstractMultiRecyclerAdapter(recyclerView: RecyclerView) : BaseRe
 abstract class AbstractSingleRecyclerAdapter<T, BIND : ViewDataBinding>(recyclerView: RecyclerView) : BaseRecyclerAdapter<T, BIND>(recyclerView) {
 
     @LayoutRes
-    abstract fun getLayoutId(): Int
+    open fun getLayoutId(): Int = 0
 
     override fun getContentType(position: Int, item: T?): Int {
         return DataSet.CONTENT
