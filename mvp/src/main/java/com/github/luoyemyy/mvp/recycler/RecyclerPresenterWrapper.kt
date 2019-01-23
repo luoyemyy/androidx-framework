@@ -15,6 +15,11 @@ interface RecyclerPresenterWrapper<T> : LoadCallback<T> {
     fun getAdapterSupport(): RecyclerAdapterSupport<*>?
 
     /**
+     * 初始化延迟加载数据
+     */
+    fun delayInitTime() = 400L
+
+    /**
      *
      * 工作线程加载数据（已实现异步）
      */

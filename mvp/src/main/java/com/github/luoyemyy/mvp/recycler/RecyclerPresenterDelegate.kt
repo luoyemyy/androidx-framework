@@ -1,6 +1,7 @@
 package com.github.luoyemyy.mvp.recycler
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.*
 import io.reactivex.Single
@@ -93,7 +94,14 @@ class RecyclerPresenterDelegate<T> : LifecycleObserver {
         if (isInitialized()) {
             mAdapter?.attachToRecyclerView(mScrollPosition, mScrollOffset)
         } else if (beforeLoadInit(bundle)) {
-            loadData(LoadType.init(), bundle)
+            val delay = mPresenter?.delayInitTime() ?: 0
+            if (delay > 0) {
+                Handler().postDelayed({
+                    loadData(LoadType.init(), bundle)
+                }, delay)
+            } else {
+                loadData(LoadType.init(), bundle)
+            }
         }
     }
 
