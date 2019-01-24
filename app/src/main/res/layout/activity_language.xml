@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@drawable/divider"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <TextView
+            android:id="@+id/txtAUTO"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_item"
+            android:drawableEnd="@drawable/ic_check"
+            android:padding="16dp"
+            android:text="@string/language_auto" />
+
+        <TextView
+            android:id="@+id/txtCN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_item"
+            android:drawableEnd="@drawable/ic_check"
+            android:padding="16dp"
+            android:text="@string/language_cn" />
+
+        <TextView
+            android:id="@+id/txtCN_HK"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_item"
+            android:drawableEnd="@drawable/ic_check"
+            android:padding="16dp"
+            android:text="@string/language_cn_hk" />
+
+        <TextView
+            android:id="@+id/txtCN_TW"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_item"
+            android:drawableEnd="@drawable/ic_check"
+            android:padding="16dp"
+            android:text="@string/language_cn_tw" />
+
+        <TextView
+            android:id="@+id/txtEN_US"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_item"
+            android:drawableEnd="@drawable/ic_check"
+            android:padding="16dp"
+            android:text="@string/language_en_us" />
+    </LinearLayout>
+
+</layout>
+
+
+
+
+

@@ -34,6 +34,7 @@
         <activity android:name=".design.DesignActivity" />
         <activity android:name=".picker.PickerImageActivity" />
         <activity android:name=".navigation.NavActivity" />
+        <activity android:name=".language.LanguageActivity" android:theme="@style/AppTheme"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

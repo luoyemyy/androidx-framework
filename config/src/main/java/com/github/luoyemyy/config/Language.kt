@@ -11,11 +11,11 @@ object Language {
     /**
      * Language Type
      */
-    val AUTO = "auto"
-    val CN = "CN"
-    val CN_HK = "HK"
-    val CN_TW = "TW"
-    val EN_US = "US"
+    const val AUTO = "auto"
+    const val CN = "CN"
+    const val CN_HK = "HK"
+    const val CN_TW = "TW"
+    const val EN_US = "US"
 
     private const val LANGUAGE_CONFIG = "language_config"
     private const val LANGUAGE_KEY = "language_key"
@@ -43,6 +43,9 @@ object Language {
         }
     }
 
+    /**
+     * Application#onCreate()
+     */
     @JvmStatic
     fun listenerLanguageChange(context: Context) {
         context.applicationContext.registerReceiver(object : BroadcastReceiver() {
@@ -64,6 +67,9 @@ object Language {
         updateLanguage(context)
     }
 
+    @JvmStatic
+    fun getLanguageKey(context: Context):String = getAppKey(context)
+
     private fun updateLanguage(context: Context) {
         val config = context.resources.configuration
         val locale = getAppLocal(context)
@@ -75,19 +81,19 @@ object Language {
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
     }
 
-    private fun saveAppKey(context: Context, languageKey: String): Boolean {
-        return spf(context).edit().putString(LANGUAGE_KEY, languageKey).commit()
-    }
-
     private fun getAppKey(context: Context): String {
         return spf(context).getString(LANGUAGE_KEY, null) ?: AUTO
     }
 
-    private fun getAppLocal(context: Context): Locale {
-        return getLocale(getAppKey(context))
+    private fun saveAppKey(context: Context, languageKey: String): Boolean {
+        return spf(context).edit().putString(LANGUAGE_KEY, languageKey).commit()
     }
 
-    private fun getLocale(languageKey: String): Locale {
+    private fun getAppLocal(context: Context): Locale {
+        return getLocaleByKey(getAppKey(context))
+    }
+
+    private fun getLocaleByKey(languageKey: String): Locale {
         return when (languageKey) {
             AUTO -> mInitSystemLocale
             CN -> Locale.SIMPLIFIED_CHINESE
@@ -96,7 +102,6 @@ object Language {
             else -> Locale.SIMPLIFIED_CHINESE
         }
     }
-
 
     private fun getInitSystemLocale(): Locale {
         return if (isGeApi24()) {

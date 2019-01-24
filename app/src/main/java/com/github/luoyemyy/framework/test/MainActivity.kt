@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import com.github.luoyemyy.bus.Bus
 import com.github.luoyemyy.bus.BusMsg
 import com.github.luoyemyy.bus.BusResult
+import com.github.luoyemyy.config.Language
 import com.github.luoyemyy.debug.DebugActivity
 import com.github.luoyemyy.ext.toast
 import com.github.luoyemyy.framework.test.databinding.ActivityMainBinding
@@ -19,6 +20,7 @@ import com.github.luoyemyy.framework.test.databinding.ActivityMainRecyclerBindin
 import com.github.luoyemyy.framework.test.design.DesignActivity
 import com.github.luoyemyy.framework.test.drawer.DrawerActivity
 import com.github.luoyemyy.framework.test.exoplayer.ExoPlayerActivity
+import com.github.luoyemyy.framework.test.language.LanguageActivity
 import com.github.luoyemyy.framework.test.mvp.MvpActivity
 import com.github.luoyemyy.framework.test.navigation.NavActivity
 import com.github.luoyemyy.framework.test.picker.PickerImageActivity
@@ -107,6 +109,7 @@ class MainActivity : AppCompatActivity(), BusResult {
                     }
                 }
                 17 -> throw NullPointerException("null")
+                18-> startActivity(Intent(this@MainActivity, LanguageActivity::class.java))
 
             }
         }
@@ -133,7 +136,8 @@ class MainActivity : AppCompatActivity(), BusResult {
                     Action(13, "debug"),
                     Action(14, "picker"),
                     Action(15, "nav"),
-                    Action(17, "null异常")
+                    Action(17, "null异常"),
+                    Action(18,"多语言")
             )
         }
     }
