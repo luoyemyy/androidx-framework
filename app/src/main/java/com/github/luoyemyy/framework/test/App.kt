@@ -12,14 +12,10 @@ class App : Application() {
         super.onCreate()
         AppInfo.init(this)
         DB.init(this)
+        Language.listenerLanguageChange(this)
     }
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(Language.attachBaseContext(base))
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration?) {
-        super.onConfigurationChanged(newConfig)
-        Language.systemLanguageChanged(this)
     }
 }

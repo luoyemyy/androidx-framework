@@ -1,7 +1,6 @@
 package com.github.luoyemyy.config
 
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
 import android.os.Build
 import android.os.LocaleList
 import java.util.*
@@ -20,8 +19,7 @@ object Language {
 
     private const val LANGUAGE_CONFIG = "language_config"
     private const val LANGUAGE_KEY = "language_key"
-    private val mSystemLocaleDesc = if (isGeApi24()) LocaleList.getDefault().toString() else ""
-
+    private val mInitSystemLocale = getInitSystemLocale()
 
     /**
      * Application#attachBaseContext(Context)
@@ -45,14 +43,15 @@ object Language {
         }
     }
 
-    /**
-     * Application#onConfigurationChanged(Configuration)
-     */
     @JvmStatic
-    fun systemLanguageChanged(context: Context) {
-        if (isAuto(context)) {
-            System.exit(0)
-        }
+    fun listenerLanguageChange(context: Context) {
+        context.applicationContext.registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent?) {
+                if (getAppKey(context) == AUTO) {
+                    System.exit(0)
+                }
+            }
+        }, IntentFilter(Intent.ACTION_LOCALE_CHANGED))
     }
 
     /**
@@ -90,7 +89,7 @@ object Language {
 
     private fun getLocale(languageKey: String): Locale {
         return when (languageKey) {
-            AUTO -> getSystemLocale()
+            AUTO -> mInitSystemLocale
             CN -> Locale.SIMPLIFIED_CHINESE
             CN_HK, CN_TW -> Locale.TRADITIONAL_CHINESE
             EN_US -> Locale.US
@@ -98,16 +97,10 @@ object Language {
         }
     }
 
-    private fun getSystemLocale(): Locale {
+
+    private fun getInitSystemLocale(): Locale {
         return if (isGeApi24()) {
-            val defaultLocale = LocaleList.getDefault()
-            val defaultLocaleDesc = defaultLocale.toString()
-            val localeList = (0 until defaultLocale.size()).map { defaultLocale[it] }
-            when {
-                defaultLocaleDesc == mSystemLocaleDesc -> localeList[0]
-                localeList.size > 1 -> localeList[1]
-                else -> localeList[0]
-            }
+            LocaleList.getDefault()[0]
         } else {
             Locale.getDefault()
         }
