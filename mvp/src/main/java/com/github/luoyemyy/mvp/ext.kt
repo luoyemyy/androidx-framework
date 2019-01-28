@@ -1,5 +1,8 @@
 package com.github.luoyemyy.mvp
 
+import android.os.AsyncTask
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.AndroidViewModel
@@ -42,3 +45,12 @@ fun <T> Single<T>.result(result: (ok: Boolean, value: T?) -> Unit): Disposable {
         result(error == null, value)
     }
 }
+
+/**
+ * thread run
+ */
+fun runOnWorker(run: () -> Unit) = AsyncTask.THREAD_POOL_EXECUTOR.execute(run)
+
+fun runOnMain(run: () -> Unit) = Handler(Looper.getMainLooper()).post(run)
+
+fun runOnMainDelay(delay: Long, run: () -> Unit) = Handler(Looper.getMainLooper()).postDelayed(run, delay)

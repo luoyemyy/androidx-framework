@@ -1,7 +1,6 @@
 package com.github.luoyemyy.framework.test.recycler
 
 import android.app.Application
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -53,7 +52,7 @@ class RecyclerActivity : AppCompatActivity(), BusResult {
                 mBinding.stick.name = "${item.type},${item.name}"
             }
         })
-        mBinding.recyclerView.addItemDecoration(RecyclerDecoration.middle(this, 1, true).drawDivider())
+        mBinding.recyclerView.addItemDecoration(LinearDecoration.middle(this, 1, true).drawDivider())
 
         mPresenter.loadInit()
     }

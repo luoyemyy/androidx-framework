@@ -12,7 +12,6 @@ import androidx.databinding.DataBindingUtil
 import com.github.luoyemyy.bus.Bus
 import com.github.luoyemyy.bus.BusMsg
 import com.github.luoyemyy.bus.BusResult
-import com.github.luoyemyy.config.Language
 import com.github.luoyemyy.debug.DebugActivity
 import com.github.luoyemyy.ext.toast
 import com.github.luoyemyy.framework.test.databinding.ActivityMainBinding
@@ -43,7 +42,7 @@ class MainActivity : AppCompatActivity(), BusResult {
         mPresenter.setup(this, Adapter())
 
         mBinding.recyclerView.setLinearManager()
-        mBinding.recyclerView.addItemDecoration(RecyclerDecoration.beginMiddleEnd(this, 1, true).drawDivider(Color.BLUE, 48, 48, true))
+        mBinding.recyclerView.addItemDecoration(LinearDecoration.beginMiddleEnd(this, 1, true).drawDivider(Color.BLUE, 48, 48, true))
 
         Bus.addCallback(lifecycle, this, BUS_EVENT)
 

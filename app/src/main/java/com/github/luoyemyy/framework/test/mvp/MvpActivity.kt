@@ -23,7 +23,7 @@ class MvpActivity : AppCompatActivity(), BusResult {
         mBinding.setLifecycleOwner(this)
         mBinding.presenter = getPresenter()
 
-        mBinding.presenter?.load()
+//        mBinding.presenter?.load()
 
         Bus.addCallback(lifecycle, this, EVENT_BUS)
 
