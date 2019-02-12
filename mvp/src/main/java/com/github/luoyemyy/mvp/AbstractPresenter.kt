@@ -41,7 +41,7 @@ abstract class AbstractPresenter<T>(app: Application) : BasePresenter(app) {
      * @param bundle        初始化参数
      */
     @MainThread
-    fun loadInit(bundle: Bundle? = null) {
+    open fun loadInit(bundle: Bundle? = null) {
         if (!isInitialized() || reload()) {
             val delay = delayInitTime()
             if (delay > 0) {
@@ -56,7 +56,7 @@ abstract class AbstractPresenter<T>(app: Application) : BasePresenter(app) {
      * 刷新数据，并展示
      */
     @MainThread
-    fun loadRefresh() {
+    open fun loadRefresh() {
         load(LoadType.refresh())
     }
 

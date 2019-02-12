@@ -47,14 +47,14 @@ class AlbumActivity : AppCompatActivity() {
             setTitle(R.string.image_picker_album_title)
             setDisplayHomeAsUpEnabled(true)
         }
-        mAlbumPresenter.setMenu()
 
-        mAlbumPresenter.liveDataInit.observe(this, Observer {
-            mBucketPresenter.loadInit(mAlbumPresenter.buckets)
+        mAlbumPresenter.setFlagObserver(this, Observer {
+            when (it) {
+                1 -> mBucketPresenter.loadInit(mAlbumPresenter.buckets)
+                2 -> invalidateOptionsMenu()
+            }
         })
-        mAlbumPresenter.liveDataMenu.observe(this, Observer {
-            invalidateOptionsMenu()
-        })
+        mAlbumPresenter.setMenu()
 
         mBinding.recyclerView.apply {
             setGridManager(mAlbumPresenter.getSpan())

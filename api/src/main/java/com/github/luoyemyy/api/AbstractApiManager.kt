@@ -21,7 +21,7 @@ abstract class AbstractApiManager {
 
     open fun adapter(): CallAdapter.Factory? = RxJava2CallAdapterFactory.create()
 
-    fun getRetrofit(): Retrofit {
+    open fun getRetrofit(): Retrofit {
         return Retrofit.Builder().baseUrl(baseUrl()).client(client().build()).apply {
             converter()?.also {
                 addConverterFactory(it)

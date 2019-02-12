@@ -84,7 +84,7 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         return getMatrixValues(mMatrix)
     }
 
-    private fun equelsMatrix(matrix1: Matrix, matrix2: Matrix): Boolean {
+    private fun equalsMatrix(matrix1: Matrix, matrix2: Matrix): Boolean {
         val array1 = getMatrixValues(matrix1)
         val array2 = getMatrixValues(matrix2)
         return (0..8).all { array1[it] == array2[it] }
@@ -385,7 +385,7 @@ open class PreviewImageView(context: Context, attributeSet: AttributeSet?, defSt
         private lateinit var mAnimator: ValueAnimator
         override fun start() {
             val endMatrix = calculateLimitMatrix() ?: return
-            if (!equelsMatrix(mMatrix, endMatrix)) {
+            if (!equalsMatrix(mMatrix, endMatrix)) {
                 mAnimator = animator(mMatrix, endMatrix).apply {
                     addListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationEnd(animation: Animator?) {

@@ -9,7 +9,7 @@ import com.github.luoyemyy.picker.entity.Bucket
 
 class BucketPresenter(val app: Application) : AbstractRecyclerPresenter<Bucket>(app) {
 
-    var buckets: List<Bucket>? = null
+    private var buckets: List<Bucket>? = null
 
     fun loadInit(list: List<Bucket>?) {
         buckets = list

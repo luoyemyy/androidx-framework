@@ -51,6 +51,10 @@ class StickHelper private constructor(private val mStickView: View, private val 
         }
     }
 
+    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+        onScrolled(recyclerView, 0, 0)
+    }
+
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         val count = recyclerView.childCount
         if (count <= 0) {

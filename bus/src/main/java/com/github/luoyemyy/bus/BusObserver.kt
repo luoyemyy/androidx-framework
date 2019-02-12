@@ -47,6 +47,10 @@ internal class BusObserver constructor(private val lifecycle: Lifecycle, private
         if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             mResult.busResult(event, msg)
         } else {
+            if (event.endsWith("@REPLACE")) {
+                //如果 event 包含替换后缀，则会删除之前相同的事件，只保留最新的一个
+                pendingEvents.removeAll { it.event == event }
+            }
             pendingEvents.add(EventInfo(event, msg))
         }
     }

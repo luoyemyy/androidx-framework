@@ -58,6 +58,9 @@ object PermissionHelper {
             PermissionFragment.startPermissionFragment(mActivity.supportFragmentManager, mEvent, requestPermissions)
         }
 
+        /**
+         * fragment中调用此方法
+         */
         fun request(fragmentLifecycle: Lifecycle) {
             Bus.addCallback(fragmentLifecycle, this, mEvent)
             val requestPermissions = filterPermissions(mActivity, mPermissions) ?: return

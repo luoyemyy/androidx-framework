@@ -8,8 +8,10 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.Build
-import android.view.*
-import android.view.inputmethod.EditorInfo
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
@@ -80,13 +82,13 @@ fun ViewGroup.pointInEditText(x: Int, y: Int): Boolean {
 /**
  * 点击editText之外的区域自动关闭键盘，并取消焦点
  */
-fun autoCloseKeyboardAndClearFocus(activity: Activity, ev: MotionEvent?) {
-    val x = ev?.rawX?.toInt() ?: -1
-    val y = ev?.rawY?.toInt() ?: -1
-    val viewGroup = activity.window.peekDecorView() as? ViewGroup
-    if (x >= 0 && y >= 0 && viewGroup != null && !viewGroup.pointInEditText(x, y)) {
-        activity.hideKeyboard()
-        (activity.currentFocus as? EditText)?.clearFocus()
+fun Activity.autoCloseKeyboardAndClearFocus(ev: MotionEvent?) {
+    val x = ev?.rawX?.toInt() ?: return
+    val y = ev.rawY.toInt()
+    val viewGroup = window.peekDecorView() as? ViewGroup ?: return
+    if (x >= 0 && y >= 0 && !viewGroup.pointInEditText(x, y)) {
+        hideKeyboard()
+        (currentFocus as? EditText)?.clearFocus()
     }
 }
 

@@ -2,7 +2,6 @@ package com.github.luoyemyy.picker.album
 
 import android.app.Application
 import android.os.Bundle
-import androidx.lifecycle.MutableLiveData
 import com.github.luoyemyy.ext.toJsonString
 import com.github.luoyemyy.ext.toast
 import com.github.luoyemyy.mvp.recycler.AbstractRecyclerPresenter
@@ -19,8 +18,6 @@ class AlbumPresenter(private val app: Application) : AbstractRecyclerPresenter<I
     var bucketId: Int = 0
     var mMenuText: String? = null
     var buckets: List<Bucket>? = null
-    val liveDataInit = MutableLiveData<Boolean>()
-    val liveDataMenu = MutableLiveData<Boolean>()
 
     private val mModel: AlbumModel by lazy { AlbumModel(app) }
     private var mSizePair: Pair<Int, Int>? = null
@@ -30,12 +27,12 @@ class AlbumPresenter(private val app: Application) : AbstractRecyclerPresenter<I
         if (maxSelect > 1) {
             val selectCount = findSelectImages().size
             mMenuText = app.getString(R.string.image_picker_selected, selectCount, maxSelect)
-            liveDataMenu.postValue(true)
+            flag.postValue(1)
         }
     }
 
     override fun loadInit(bundle: Bundle?) {
-        if (!isInitialized()){
+        if (!isInitialized()) {
             reCalculateImageItemSize()
         }
         super.loadInit(bundle)
@@ -44,7 +41,7 @@ class AlbumPresenter(private val app: Application) : AbstractRecyclerPresenter<I
     override fun loadData(loadType: LoadType, paging: Paging, bundle: Bundle?, search: String?): List<Image>? {
         if (loadType.isInit()) {
             buckets = mModel.queryImage()
-            liveDataInit.postValue(true)
+            flag.postValue(2)
         }
         return buckets?.firstOrNull { it.id == bucketId }?.images?.mapIndexed { index, image ->
             image.index = index
@@ -52,7 +49,7 @@ class AlbumPresenter(private val app: Application) : AbstractRecyclerPresenter<I
         }
     }
 
-    fun reCalculateImageItemSize(): Pair<Int, Int> {
+    private fun reCalculateImageItemSize(): Pair<Int, Int> {
         val suggestSize = app.resources.displayMetrics.density * 100
         val screenWidth = app.resources.displayMetrics.widthPixels
 
