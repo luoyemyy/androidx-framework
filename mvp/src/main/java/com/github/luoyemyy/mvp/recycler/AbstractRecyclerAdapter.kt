@@ -14,11 +14,12 @@ abstract class AbstractMultiRecyclerAdapter(recyclerView: RecyclerView) : BaseRe
     open fun getLayoutId(viewType: Int): Int = 0
 
     override fun createContentView(inflater: LayoutInflater, parent: ViewGroup, viewType: Int): ViewDataBinding? {
-        val layoutId = getLayoutId(viewType)
-        return if (layoutId > 0) {
-            DataBindingUtil.inflate(inflater, layoutId, parent, false)
-        } else {
-            null
+        return getLayoutId(viewType).let {
+            if (it > 0) {
+                DataBindingUtil.inflate(inflater, it, parent, false)
+            } else {
+                null
+            }
         }
     }
 }
@@ -28,12 +29,12 @@ abstract class AbstractSingleRecyclerAdapter<T, BIND : ViewDataBinding>(recycler
     @LayoutRes
     open fun getLayoutId(): Int = 0
 
-    override fun getContentType(position: Int, item: T?): Int {
-        return DataSet.CONTENT
-    }
-
     override fun createContentView(inflater: LayoutInflater, parent: ViewGroup, viewType: Int): BIND? {
         return DataBindingUtil.inflate(inflater, getLayoutId(), parent, false)
+    }
+
+    override fun getContentType(position: Int, item: T?): Int {
+        return DataSet.CONTENT
     }
 }
 

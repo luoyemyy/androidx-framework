@@ -138,10 +138,10 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(
 
     private fun createExtraView(parent: ViewGroup, viewType: Int): View {
         return when (viewType) {
-            DataSet.EMPTY -> createEmptyView(parent.context)
-            DataSet.MORE_LOADING -> createMoreLoadingView(parent.context)
-            DataSet.MORE_END -> createMoreEndView(parent.context)
-            DataSet.MORE_ERROR -> createMoreErrorView(parent.context)
+            DataSet.EMPTY -> createEmptyView(parent.context, parent)
+            DataSet.MORE_LOADING -> createMoreLoadingView(parent.context, parent)
+            DataSet.MORE_END -> createMoreEndView(parent.context, parent)
+            DataSet.MORE_ERROR -> createMoreErrorView(parent.context, parent)
             else -> View(parent.context)
         }
     }
@@ -163,24 +163,25 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(
         return layout
     }
 
-    private fun createEmptyView(context: Context): View {
-        return mWrapper.getEmptyBinding()?.root ?: createLayout(context, "暂无数据")
+    private fun createEmptyView(context: Context, parent: ViewGroup): View {
+        return mWrapper.getEmptyBinding(context, parent)?.root ?: createLayout(context, "暂无数据")
     }
 
-    private fun createMoreEndView(context: Context): View {
-        return mWrapper.getMoreEndBinding()?.root ?: createLayout(context, "暂无更多")
+    private fun createMoreEndView(context: Context, parent: ViewGroup): View {
+        return mWrapper.getMoreEndBinding(context, parent)?.root ?: createLayout(context, "暂无更多")
     }
 
-    private fun createMoreErrorView(context: Context): View {
-        return (mWrapper.getMoreErrorBinding()?.root ?: createLayout(context, "加载失败")).apply {
+    private fun createMoreErrorView(context: Context, parent: ViewGroup): View {
+        return (mWrapper.getMoreErrorBinding(context, parent)?.root
+                ?: createLayout(context, "加载失败")).apply {
             setOnClickListener {
                 mPresenter.loadMore()
             }
         }
     }
 
-    private fun createMoreLoadingView(context: Context): View {
-        return mWrapper.getMoreLoadingBinding()?.root ?: let {
+    private fun createMoreLoadingView(context: Context, parent: ViewGroup): View {
+        return mWrapper.getMoreLoadingBinding(context, parent)?.root ?: let {
             val layout = createLayout(context, "加载中...")
             val padding = dp2px(context, 8)
             val progressSize = dp2px(context, 20)

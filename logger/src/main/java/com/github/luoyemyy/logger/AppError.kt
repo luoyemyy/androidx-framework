@@ -22,11 +22,11 @@ class AppError private constructor(private val mApp: Application, private val mD
         if (handleException(ex) == null) {
             mDefaultHandler.uncaughtException(thread, ex)
         } else {
-            val launcher = mApp.packageManager.getLaunchIntentForPackage(mApp.packageName)
-            if (launcher != null) {
-                launcher.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                mApp.startActivity(launcher)
-            }
+//            val launcher = mApp.packageManager.getLaunchIntentForPackage(mApp.packageName)
+//            if (launcher != null) {
+//                launcher.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//                mApp.startActivity(launcher)
+//            }
             System.exit(0)
         }
     }

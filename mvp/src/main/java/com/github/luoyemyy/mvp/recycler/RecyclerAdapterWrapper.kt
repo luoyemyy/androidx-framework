@@ -1,5 +1,6 @@
 package com.github.luoyemyy.mvp.recycler
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,22 +61,22 @@ interface RecyclerAdapterWrapper<T, BIND : ViewDataBinding> {
     /**
      * 获得加载更多-加载中样式
      */
-    fun getMoreLoadingBinding(): ViewDataBinding? = null
+    fun getMoreLoadingBinding(context: Context,parent: ViewGroup): ViewDataBinding? = null
 
     /**
      * 获得加载更多-暂无更多样式
      */
-    fun getMoreEndBinding(): ViewDataBinding? = null
+    fun getMoreEndBinding(context: Context,parent: ViewGroup): ViewDataBinding? = null
 
     /**
      * 获得空数据样式
      */
-    fun getEmptyBinding(): ViewDataBinding? = null
+    fun getEmptyBinding(context: Context,parent: ViewGroup): ViewDataBinding? = null
 
     /**
      * 获得加载更多-加载失败样式
      */
-    fun getMoreErrorBinding(): ViewDataBinding? = null
+    fun getMoreErrorBinding(context: Context,parent: ViewGroup): ViewDataBinding? = null
 
     fun getRecyclerView(): RecyclerView
 
