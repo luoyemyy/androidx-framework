@@ -133,7 +133,7 @@ internal class RecyclerAdapterDelegate<T, BIND : ViewDataBinding>(
     }
 
     private fun isContentByType(type: Int): Boolean {
-        return type == DataSet.CONTENT
+        return type >= DataSet.CONTENT
     }
 
     private fun createExtraView(parent: ViewGroup, viewType: Int): View {
