@@ -14,13 +14,10 @@ class LogInterceptor : Interceptor {
     }
 
     private fun afterLog(response: Response): Response {
-        val size = response.body()?.contentLength() ?: 0
-        if (size > 0L) {
-            Logger.i("LogInterceptor", "<<<<<<:${response.peekBody(size).string()}")
-        } else {
-            Logger.i("LogInterceptor", "<<<<<<:{},contentLength()==0")
-        }
-        return response
+        val mediaType = response.body()?.contentType()
+        val content = response.body()?.toString() ?: "{}"
+        Logger.i("LogInterceptor", "<<<<<<:$content")
+        return response.newBuilder().body(okhttp3.ResponseBody.create(mediaType, content)).build()
     }
 
     private fun preLog(request: Request): Request {
