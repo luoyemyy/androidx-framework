@@ -26,7 +26,7 @@ class LogInterceptor : Interceptor {
         if (method.equals("POST", true)) {
             logBuilder.append(",${postBodyParam(request.body())}")
         }
-        Logger.i("LogInterceptor", "preLog:  $logBuilder")
+        Logger.i("LogInterceptor", "$logBuilder")
         return request
     }
 
