@@ -15,7 +15,7 @@ class LogInterceptor : Interceptor {
 
     private fun afterLog(response: Response): Response {
         val mediaType = response.body()?.contentType()
-        val content = response.body()?.toString() ?: "{}"
+        val content = response.body()?.string() ?: "{}"
         Logger.i("LogInterceptor", "<<<<<<:$content")
         return response.newBuilder().body(okhttp3.ResponseBody.create(mediaType, content)).build()
     }
