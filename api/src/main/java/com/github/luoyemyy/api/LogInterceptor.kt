@@ -3,6 +3,7 @@ package com.github.luoyemyy.api
 import com.github.luoyemyy.logger.Logger
 import okhttp3.*
 import okio.Buffer
+import java.net.URLDecoder
 
 /**
  * 日志拦截器
@@ -15,20 +16,26 @@ class LogInterceptor : Interceptor {
 
     private fun afterLog(response: Response): Response {
         val mediaType = response.body()?.contentType()
-        val content = response.body()?.string() ?: "{}"
+        val content = response.body()?.string() ?: ""
         Logger.i("LogInterceptor", "<<<<<<:$content")
         return response.newBuilder().body(okhttp3.ResponseBody.create(mediaType, content)).build()
     }
 
     private fun preLog(request: Request): Request {
         val method = request.method().toUpperCase()
-        val logBuilder = StringBuilder().append(">>>>>>:$method,${request.url()}")
+        val url = URLDecoder.decode(request.url().toString(), "utf-8")
+        val logBuilder = StringBuilder().append(">>>>>>:$method,$url")
         if (method.equals("POST", true)) {
-            logBuilder.append(",${postBodyParam(request.body())}")
+            URLDecoder.decode(postBodyParam(request.body()), "utf-8").apply {
+                if (isNotEmpty()) {
+                    logBuilder.append(",$this")
+                }
+            }
         }
         Logger.i("LogInterceptor", "$logBuilder")
         return request
     }
+
 
     private fun postBodyParam(body: RequestBody?): String {
         return when (body) {
@@ -39,7 +46,7 @@ class LogInterceptor : Interceptor {
         }
     }
 
-    private fun logOtherBody(body: RequestBody) = Buffer().run { body.writeTo(this);readString(charset("utf-8")) }
+    private fun logOtherBody(body: RequestBody) = Buffer().run { body.writeTo(this);readUtf8() }
 
     private fun logFormBody(body: FormBody) = logOtherBody(body)//(0 until body.size()).joinToString("&") { "${body.name(it)}=${body.value(it)}" }
 
