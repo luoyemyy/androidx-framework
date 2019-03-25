@@ -76,7 +76,7 @@ class ImagePicker private constructor() {
         }
 
         /**
-         * 按照固定尺寸计算裁剪区域，不超过imageView的大小
+         * 按照固定尺寸计算裁剪区域，不超过imageView的大小，不可以继续设置压缩图片
          * @param size cropSize > 0
          * @param ratio  cropRatio > 0
          */
@@ -91,7 +91,7 @@ class ImagePicker private constructor() {
         }
 
         /**
-         * 按照imageView的最小边的百分比计算裁剪区域
+         * 按照imageView的最小边的百分比计算裁剪区域，可以继续设置压缩图片
          * @param percent 0 < cropPercent <= 1
          * @param ratio  cropRatio > 0
          */
@@ -104,6 +104,18 @@ class ImagePicker private constructor() {
             mOption.cropType = 2
             return this
         }
+
+        /**
+         * 压缩图片
+         * @param maxLength 最长边的长度
+         */
+        fun compress(maxLength: Int): Builder {
+            if (maxLength <= 0) throw IllegalArgumentException("maxLength: maxLength > 0")
+            mOption.compress = true
+            mOption.compressMaxLength = maxLength
+            return this
+        }
+
 
         fun build(): ImagePicker {
             if (mOption.maxSelect <= 0) {

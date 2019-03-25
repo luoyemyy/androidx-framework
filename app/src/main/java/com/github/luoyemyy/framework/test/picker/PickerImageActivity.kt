@@ -55,7 +55,7 @@ class PickerImageActivity : AppCompatActivity() {
         override fun onItemClickListener(vh: VH<ActivityMainRecyclerBinding>, view: View?) {
             when (getItem(vh.adapterPosition)?.id) {
                 1 -> ImagePicker.create(packageName).album().maxSelect(9).build().picker(thisActivity, callback)
-                2 -> ImagePicker.create(packageName).album().maxSelect(9).cropByPercent().build().picker(thisActivity, callback)
+                2 -> ImagePicker.create(packageName).album().maxSelect(9).cropByPercent().compress(200).build().picker(thisActivity, callback)
                 3 -> ImagePicker.create(packageName).camera().build().picker(thisActivity, callback)
                 4 -> ImagePicker.create(packageName).camera().cropBySize(dp2px(300)).build().picker(thisActivity, callback)
                 5 -> ImagePicker.create(packageName).albumAndCamera().build().picker(thisActivity, callback)

@@ -12,4 +12,7 @@ class PickerOption(var fileProvider: String) {
     var cropSize: Int = 0               //px 如果大于imageView的最小边，则取最小边
     var cropPercent: Float = 0f         //相对于imageView的最小边的比例
     var cropRatio: Float = 0f           //x:y 比例
+
+    var compress: Boolean = false
+    var compressMaxLength: Int = 0
 }
