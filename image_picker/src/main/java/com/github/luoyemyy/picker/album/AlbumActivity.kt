@@ -50,8 +50,8 @@ class AlbumActivity : AppCompatActivity() {
 
         mAlbumPresenter.setFlagObserver(this, Observer {
             when (it) {
-                1 -> mBucketPresenter.loadInit(mAlbumPresenter.buckets)
-                2 -> invalidateOptionsMenu()
+                1 -> invalidateOptionsMenu()
+                2 -> mBucketPresenter.loadInit(mAlbumPresenter.buckets)
             }
         })
         mAlbumPresenter.setMenu()
@@ -67,6 +67,15 @@ class AlbumActivity : AppCompatActivity() {
             mBottomSheet.peekHeight = 0
             mBottomSheet.isHideable = true
             hideBucket()
+
+            mBottomSheet.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onSlide(p0: View, p1: Float) {}
+                override fun onStateChanged(p0: View, p1: Int) {
+                    if (p1 == BottomSheetBehavior.STATE_COLLAPSED) {
+                        mBinding.fab.show()
+                    }
+                }
+            })
         }
 
         mBinding.fab.setOnClickListener {
@@ -82,7 +91,7 @@ class AlbumActivity : AppCompatActivity() {
     }
 
     private fun hideBucket() {
-        mBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
+        mBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
         mBinding.fab.show()
     }
 

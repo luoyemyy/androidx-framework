@@ -11,7 +11,7 @@ class GridDecoration private constructor(val context: Context, private val mColu
 
     companion object {
         fun create(context: Context, column: Int = 3, space: Int = 8, spacePxUnit: Boolean = false): GridDecoration {
-            return create(context, column, space, spacePxUnit)
+            return GridDecoration(context, column, space, spacePxUnit)
         }
     }
 
