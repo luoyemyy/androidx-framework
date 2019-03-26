@@ -18,7 +18,8 @@ class CropImageView(context: Context, attributeSet: AttributeSet?, defStyleAttr:
     constructor(context: Context) : this(context, null, 0, 0)
 
     private var mCropType = ImagePicker.option.cropType
-    private var mCropSize = ImagePicker.option.cropSize
+    private var mCropWidth = ImagePicker.option.cropWidth
+    private var mCropHeight = ImagePicker.option.cropHeight
     private var mCropPercent = ImagePicker.option.cropPercent
     private var mCropRatio = ImagePicker.option.cropRatio
     private var mMaskColor: Int = 0x80000000.toInt()
@@ -53,28 +54,15 @@ class CropImageView(context: Context, attributeSet: AttributeSet?, defStyleAttr:
     }
 
     private fun cropSize(): Pair<Int, Int> {
-        when (mCropType) {
-            1 -> return if (width < height) {
-                val w = min(mCropSize, width)
-                val h = min((w * mCropRatio).toInt(), height)
-                Pair(w, h)
-            } else {
-                val h = min(mCropSize, height)
-                val w = min((h * mCropRatio).toInt(), width)
-                Pair(w, h)
-            }
-            2 -> return if (width < height) {
-                val w = (width * mCropPercent).toInt()
-                val h = min((w * mCropRatio).toInt(), height)
-                Pair(w, h)
-            } else {
-                val h = (height * mCropPercent).toInt()
-                val w = min((h * mCropRatio).toInt(), width)
-                Pair(w, h)
+        return when (mCropType) {
+            1 -> Pair(min(width, mCropWidth), min(height, mCropHeight))
+            2 -> {
+                val w = width * mCropPercent
+                val h = w * mCropRatio
+                Pair(w.toInt(), min(height, h.toInt()))
             }
             else -> return Pair(0, 0)
         }
-
     }
 
     /**

@@ -77,14 +77,14 @@ class ImagePicker private constructor() {
 
         /**
          * 按照固定尺寸计算裁剪区域，不超过imageView的大小，不可以继续设置压缩图片
-         * @param size cropSize > 0
+         * @param size cropSize > 0     指定像素的宽度
          * @param ratio  cropRatio > 0
          */
-        fun cropBySize(size: Int, ratio: Float = 1f, require: Boolean = true): Builder {
-            if (size <= 0) throw IllegalArgumentException("cropSize: cropSize > 0")
-            if (ratio <= 0) throw IllegalArgumentException("cropRatio: cropRatio > 0")
-            mOption.cropSize = size
-            mOption.cropRatio = ratio
+        fun cropBySize(width: Int, height: Int, require: Boolean = true): Builder {
+            if (width <= 0) throw IllegalArgumentException("cropWidth: cropWidth > 0")
+            if (height <= 0) throw IllegalArgumentException("cropHeight: cropHeight > 0")
+            mOption.cropWidth = width
+            mOption.cropHeight = height
             mOption.cropRequire = require
             mOption.cropType = 1
             return this
@@ -92,8 +92,8 @@ class ImagePicker private constructor() {
 
         /**
          * 按照imageView的最小边的百分比计算裁剪区域，可以继续设置压缩图片
-         * @param percent 0 < cropPercent <= 1
-         * @param ratio  cropRatio > 0
+         * @param percent 0 < cropPercent <= 1  imageView的宽度百分比
+         * @param ratio  cropRatio > 0          如果计算出的高度大于ImageView的高度则取imageView的高度
          */
         fun cropByPercent(percent: Float = 0.6f, ratio: Float = 1f, require: Boolean = true): Builder {
             if (percent <= 0 || percent > 1) throw IllegalArgumentException("cropPercent: 0 < cropPercent <= 1")
@@ -107,12 +107,12 @@ class ImagePicker private constructor() {
 
         /**
          * 压缩图片
-         * @param maxLength 最长边的长度
+         * @param width 宽度
          */
-        fun compress(maxLength: Int): Builder {
-            if (maxLength <= 0) throw IllegalArgumentException("maxLength: maxLength > 0")
+        fun compress(width: Int): Builder {
+            if (width <= 0) throw IllegalArgumentException("compressWidth: compressWidth > 0")
             mOption.compress = true
-            mOption.compressMaxLength = maxLength
+            mOption.compressWidth = width
             return this
         }
 

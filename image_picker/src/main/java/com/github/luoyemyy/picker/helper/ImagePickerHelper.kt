@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
@@ -36,18 +35,11 @@ object ImagePickerHelper {
     }
 
     private fun compress(bitmap: Bitmap): File? {
-        return if (ImagePicker.option.cropType == 2) {
-            val w = bitmap.width
-            val h = bitmap.height
-            val dw: Int
-            val dh: Int
-            if (w > h) {
-                dw = ImagePicker.option.compressMaxLength
-                dh = dw * (h / w)
-            } else {
-                dh = ImagePicker.option.compressMaxLength
-                dw = dh * (w / h)
-            }
+        return if (ImagePicker.option.cropType == 2 && ImagePicker.option.compress) {
+            val w = bitmap.width.toFloat()
+            val h = bitmap.height.toFloat()
+            val dw = ImagePicker.option.compressWidth
+            val dh = (dw.toFloat() * (h / w)).toInt()
             Bitmap.createScaledBitmap(bitmap, dw, dh, false)
         } else {
             bitmap
