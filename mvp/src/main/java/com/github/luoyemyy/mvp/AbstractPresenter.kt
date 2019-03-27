@@ -12,16 +12,33 @@ import com.github.luoyemyy.mvp.recycler.LoadType
 
 abstract class AbstractPresenter<T>(app: Application) : BasePresenter(app) {
 
+    private var mInitData: Boolean = false
+    protected var dataValue: T? = null
     protected val data: MutableLiveData<T> by lazy { MutableLiveData<T>() }
+
+    private var mInitList: Boolean = false
+    protected var listValue: List<T>? = null
     protected val list: MutableLiveData<List<T>> by lazy { MutableLiveData<List<T>>() }
 
     private var mInitialized = false
 
+    override fun removeObservers(owner: LifecycleOwner) {
+        super.removeObservers(owner)
+        if (mInitData) {
+            data.removeObservers(owner)
+        }
+        if (mInitList) {
+            list.removeObservers(owner)
+        }
+    }
+
     fun setDataObserver(owner: LifecycleOwner, observer: Observer<T>) {
+        mInitData = true
         data.observe(owner, observer)
     }
 
     fun setListObserver(owner: LifecycleOwner, observer: Observer<List<T>>) {
+        mInitList = true
         list.observe(owner, observer)
     }
 
