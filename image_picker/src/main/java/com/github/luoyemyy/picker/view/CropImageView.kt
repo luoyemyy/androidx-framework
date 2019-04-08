@@ -73,6 +73,11 @@ class CropImageView(context: Context, attributeSet: AttributeSet?, defStyleAttr:
         return RectF((width / 2 - x / 2).toFloat(), (height / 2 - y / 2).toFloat(), (width / 2 + x / 2).toFloat(), (height / 2 + y / 2).toFloat())
     }
 
+    fun changeCropMask(radio: Float) {
+        mCropRatio = radio
+        invalidate()
+    }
+
     override fun calculateLimitMatrix(): Matrix? {
 
         val endMatrix = copyCurrentMatrix()

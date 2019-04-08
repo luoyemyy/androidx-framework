@@ -13,6 +13,7 @@ class PickerOption(var fileProvider: String) {
     var cropHeight: Int = 0
     var cropPercent: Float = 0f         //相对于imageView的宽度的比例
     var cropRatio: Float = 0f           //x:y 比例
+    var cropRatioFixed: Boolean = true  //x:y 比例固定
 
     var compress: Boolean = false
     var compressWidth: Int = 0

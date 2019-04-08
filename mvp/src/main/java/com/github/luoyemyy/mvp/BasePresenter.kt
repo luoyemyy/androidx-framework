@@ -1,7 +1,6 @@
 package com.github.luoyemyy.mvp
 
 import android.app.Application
-import androidx.annotation.CallSuper
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -10,10 +9,8 @@ import androidx.lifecycle.Observer
 abstract class BasePresenter(app: Application) : AndroidViewModel(app) {
 
     protected val flag: MutableLiveData<Int> by lazy { MutableLiveData<Int>() }
-    private var mInitFlag: Boolean = false
 
     fun setFlagObserver(owner: LifecycleOwner, observer: Observer<Int>) {
-        mInitFlag = true
         flag.observe(owner, observer)
     }
 
@@ -23,13 +20,6 @@ abstract class BasePresenter(app: Application) : AndroidViewModel(app) {
 
     fun eq(flagKey: Int, flagValue: Int?): Boolean {
         return flagKey == flagValue
-    }
-
-    @CallSuper
-    open fun removeObservers(owner: LifecycleOwner) {
-        if (mInitFlag) {
-            flag.removeObservers(owner)
-        }
     }
 }
 

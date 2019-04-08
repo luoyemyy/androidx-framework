@@ -17,6 +17,20 @@ class Profile private constructor() {
             single.type = type
         }
 
+        fun currentType():Int{
+            return single.type
+        }
+
+        fun currentTypeInfo():String{
+            return when(currentType()){
+                PRO -> "PRO"
+                DEMO -> "DEMO"
+                TEST -> "TEST"
+                DEV -> "DEV"
+                else -> "DEV"
+            }
+        }
+
     }
 
     class Value<T>(private val dev: T, private val test: T, private val demo: T, private val pro: T) {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.*
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -13,6 +14,7 @@ import com.github.luoyemyy.ext.hide
 import com.github.luoyemyy.mvp.getRecyclerPresenter
 import com.github.luoyemyy.mvp.recycler.AbstractSingleRecyclerAdapter
 import com.github.luoyemyy.mvp.recycler.VH
+import com.github.luoyemyy.picker.ImagePicker
 import com.github.luoyemyy.picker.R
 import com.github.luoyemyy.picker.databinding.ImagePickerCropBinding
 import com.github.luoyemyy.picker.databinding.ImagePickerCropRecyclerBinding
@@ -49,6 +51,30 @@ class CropActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             addItemDecoration(Decoration(context))
         }
+
+        if (ImagePicker.option.cropRatioFixed) {
+            mBinding.seekBar.hide()
+        } else {
+            mBinding.seekBar.apply {
+                max = 300
+                progress = (ImagePicker.option.cropRatio * 100).toInt()
+                setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+                    }
+
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    }
+
+                    override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                        if (fromUser) {
+                            mBinding.imgPreview.changeCropMask(progress * 1.0f / 100)
+                        }
+                    }
+                })
+            }
+        }
+
         mPresenter.loadInit(intent.extras)
     }
 

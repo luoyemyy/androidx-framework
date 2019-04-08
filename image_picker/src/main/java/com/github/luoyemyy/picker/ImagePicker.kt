@@ -95,13 +95,14 @@ class ImagePicker private constructor() {
          * @param percent 0 < cropPercent <= 1  imageView的宽度百分比
          * @param ratio  cropRatio > 0          如果计算出的高度大于ImageView的高度则取imageView的高度
          */
-        fun cropByPercent(percent: Float = 0.6f, ratio: Float = 1f, require: Boolean = true): Builder {
+        fun cropByPercent(percent: Float = 0.6f, ratio: Float = 1f, require: Boolean = true, fixed: Boolean = true): Builder {
             if (percent <= 0 || percent > 1) throw IllegalArgumentException("cropPercent: 0 < cropPercent <= 1")
             if (ratio <= 0) throw IllegalArgumentException("cropRatio: cropRatio > 0")
             mOption.cropPercent = percent
             mOption.cropRatio = ratio
             mOption.cropRequire = require
             mOption.cropType = 2
+            mOption.cropRatioFixed = fixed
             return this
         }
 
