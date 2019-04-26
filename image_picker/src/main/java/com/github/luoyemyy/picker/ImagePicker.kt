@@ -13,6 +13,7 @@ import com.github.luoyemyy.ext.toList
 import com.github.luoyemyy.permission.PermissionHelper
 import com.github.luoyemyy.picker.album.AlbumActivity
 import com.github.luoyemyy.picker.capture.CaptureFragment
+import com.github.luoyemyy.picker.helper.ImagePickerHelper
 
 class ImagePicker private constructor() {
 
@@ -187,6 +188,15 @@ class ImagePicker private constructor() {
 
     inner class PickerInternal(private var mCallback: (List<String>?) -> Unit) : BusResult {
         override fun busResult(event: String, msg: BusMsg) {
+            val paths = msg.stringValue?.toList<String>()
+            if (ImagePicker.option.compress) {
+                if (ImagePicker.option.cropType != 2) {
+                    mCallback.invoke(paths?.map {
+                        ImagePickerHelper.compress(it)?.absolutePath ?: ""
+                    }?.filter { it.isNotEmpty() })
+                    return
+                }
+            }
             mCallback.invoke(msg.stringValue?.toList())
         }
     }

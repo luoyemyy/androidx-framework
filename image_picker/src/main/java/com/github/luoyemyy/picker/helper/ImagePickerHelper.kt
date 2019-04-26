@@ -1,6 +1,7 @@
 package com.github.luoyemyy.picker.helper
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
@@ -27,7 +28,7 @@ object ImagePickerHelper {
 
     fun saveBitmap(bitmap: Bitmap, result: (Boolean, String?) -> Unit) {
         AsyncTask.execute {
-            val file = compress(bitmap)
+            val file = if (ImagePicker.option.cropType == 2 && ImagePicker.option.compress) compress(bitmap) else saveFile(bitmap)
             Handler(Looper.getMainLooper()).post {
                 result(file != null, file?.absolutePath)
             }
@@ -35,19 +36,21 @@ object ImagePickerHelper {
     }
 
     private fun compress(bitmap: Bitmap): File? {
-        return if (ImagePicker.option.cropType == 2 && ImagePicker.option.compress) {
-            val w = bitmap.width.toFloat()
-            val h = bitmap.height.toFloat()
-            val dw = ImagePicker.option.compressWidth
-            val dh = (dw.toFloat() * (h / w)).toInt()
-            Bitmap.createScaledBitmap(bitmap, dw, dh, false)
-        } else {
-            bitmap
-        }.let {
-            FileManager.getInstance().outer().privateCacheFile(FileManager.IMAGE, FileManager.getInstance().getName())?.apply {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, FileOutputStream(this))
-//                Log.e("ImagePickerHelper", "compress: ${this.length() / 1024.0f} ")
-            }
+        val w = bitmap.width.toFloat()
+        val h = bitmap.height.toFloat()
+        val dw = ImagePicker.option.compressWidth
+        val dh = (dw.toFloat() * (h / w)).toInt()
+        return saveFile(Bitmap.createScaledBitmap(bitmap, dw, dh, false))
+    }
+
+    private fun saveFile(bitmap: Bitmap): File? {
+        return FileManager.getInstance().outer().privateCacheFile(FileManager.IMAGE, FileManager.getInstance().getName())?.apply {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, FileOutputStream(this))
         }
     }
+
+    fun compress(path: String): File? {
+        return compress(BitmapFactory.decodeFile(path))
+    }
+
 }
