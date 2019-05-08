@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="image"
             type="com.github.luoyemyy.picker.entity.CropImage" />
@@ -12,5 +14,6 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:contentDescription="@null"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        tools:src="@tools:sample/avatars" />
 </layout>

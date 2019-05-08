@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:itemCount="5"
+            tools:layoutManager="LinearLayoutManager"
+            tools:listitem="@layout/image_picker_crop_recycler"
+            tools:orientation="horizontal" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutImg"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/layoutOp"
+            app:layout_constraintTop_toBottomOf="@id/recyclerView">
+
+            <ImageView
+                android:id="@+id/imgSource"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerInside"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+            <View
+                android:id="@+id/mask"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:background="@drawable/image_picker_mask"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/maskTop"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="#80000000"
+                app:layout_constraintBottom_toTopOf="@id/mask"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/maskBottom"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="#80000000"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/mask" />
+
+            <View
+                android:id="@+id/maskLeft"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="#80000000"
+                app:layout_constraintBottom_toTopOf="@id/maskBottom"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/mask"
+                app:layout_constraintTop_toBottomOf="@id/maskTop" />
+
+            <View
+                android:id="@+id/maskRight"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="#80000000"
+                app:layout_constraintBottom_toTopOf="@id/maskBottom"
+                app:layout_constraintLeft_toRightOf="@id/mask"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/maskTop" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutOp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ffffff"
+            android:elevation="1dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null"
+                android:padding="16dp"
+                android:src="@drawable/image_picker_ic_back"
+                android:tint="@android:color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/imgCrop"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgCrop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null"
+                android:padding="16dp"
+                android:src="@drawable/image_picker_ic_crop"
+                android:tint="@android:color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/imgBack"
+                app:layout_constraintRight_toLeftOf="@id/imgScale"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgScale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null"
+                android:padding="16dp"
+                android:src="@drawable/image_picker_ic_scale"
+                android:tint="@android:color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/imgCrop"
+                app:layout_constraintRight_toLeftOf="@id/imgTranslation"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgTranslation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null"
+                android:padding="16dp"
+                android:src="@drawable/image_picker_ic_move"
+                android:tint="@android:color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/imgScale"
+                app:layout_constraintRight_toLeftOf="@id/imgRotate"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgRotate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null"
+                android:padding="16dp"
+                android:src="@drawable/image_picker_ic_rotate"
+                android:tint="@android:color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/imgTranslation"
+                app:layout_constraintRight_toLeftOf="@id/imgReset"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgReset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null"
+                android:padding="16dp"
+                android:src="@drawable/image_picker_ic_reset"
+                android:tint="@android:color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/imgRotate"
+                app:layout_constraintRight_toLeftOf="@id/imgSubmit"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgSubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null"
+                android:padding="16dp"
+                android:src="@drawable/image_picker_ic_check"
+                android:tint="@android:color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/imgReset"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutCrop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#80000000"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/layoutOp">
+
+            <TextView
+                android:id="@+id/txtCropOrigin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/txtCropCustom"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="原始" />
+
+            <TextView
+                android:id="@+id/txtCropCustom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/txtCropOrigin"
+                app:layout_constraintRight_toLeftOf="@id/txtCrop11"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="自由" />
+
+            <TextView
+                android:id="@+id/txtCrop11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/txtCropCustom"
+                app:layout_constraintRight_toLeftOf="@id/txtCrop34"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="1:1" />
+
+            <TextView
+                android:id="@+id/txtCrop34"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/txtCrop11"
+                app:layout_constraintRight_toLeftOf="@id/txtCrop43"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="3:4" />
+
+            <TextView
+                android:id="@+id/txtCrop43"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/txtCrop34"
+                app:layout_constraintRight_toLeftOf="@id/txtCrop916"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="4:3" />
+
+            <TextView
+                android:id="@+id/txtCrop916"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/txtCrop43"
+                app:layout_constraintRight_toLeftOf="@id/txtCrop169"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="9:16" />
+
+            <TextView
+                android:id="@+id/txtCrop169"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/txtCrop916"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="16:9" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutCropCustom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#80000000"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/layoutCrop"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <TextView
+                android:id="@+id/txtCropHeightHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="高度" />
+
+            <SeekBar
+                android:id="@+id/seekBarCropHeight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:max="200"
+                android:progress="0"
+                android:progressDrawable="@drawable/image_picker_seek_bar"
+                app:layout_constraintBottom_toBottomOf="@id/txtCropHeightHint"
+                app:layout_constraintLeft_toRightOf="@id/txtCropHeightHint"
+                app:layout_constraintRight_toLeftOf="@id/txtCropHeightValue"
+                app:layout_constraintTop_toTopOf="@id/txtCropHeightHint" />
+
+            <TextView
+                android:id="@+id/txtCropHeightValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/txtCropHeightHint"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/txtCropHeightHint"
+                tools:text="100" />
+
+            <TextView
+                android:id="@+id/txtCropWidthHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtCropHeightHint"
+                tools:text="宽度" />
+
+            <SeekBar
+                android:id="@+id/seekBarCropWidth"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:max="200"
+                android:progress="0"
+                android:progressDrawable="@drawable/image_picker_seek_bar"
+                app:layout_constraintBottom_toBottomOf="@id/txtCropWidthHint"
+                app:layout_constraintLeft_toRightOf="@id/txtCropWidthHint"
+                app:layout_constraintRight_toLeftOf="@id/txtCropWidthValue"
+                app:layout_constraintTop_toTopOf="@id/txtCropWidthHint" />
+
+            <TextView
+                android:id="@+id/txtCropWidthValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/txtCropWidthHint"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/txtCropWidthHint"
+                tools:text="100" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutScale"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#80000000"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/layoutOp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <TextView
+                android:id="@+id/txtScaleHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="缩放" />
+
+            <SeekBar
+                android:id="@+id/seekBarScale"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:max="200"
+                android:progress="0"
+                android:progressDrawable="@drawable/image_picker_seek_bar"
+                app:layout_constraintBottom_toBottomOf="@id/txtScaleHint"
+                app:layout_constraintLeft_toRightOf="@id/txtScaleHint"
+                app:layout_constraintRight_toLeftOf="@id/txtScaleValue"
+                app:layout_constraintTop_toTopOf="@id/txtScaleHint" />
+
+            <TextView
+                android:id="@+id/txtScaleValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/txtScaleHint"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/txtScaleHint"
+                tools:text="100" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutRotate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#80000000"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/layoutOp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:visibility="gone">
+
+            <TextView
+                android:id="@+id/txtRotateHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="旋转" />
+
+            <SeekBar
+                android:id="@+id/seekBarRotate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:max="200"
+                android:progress="0"
+                android:progressDrawable="@drawable/image_picker_seek_bar"
+                app:layout_constraintBottom_toBottomOf="@id/txtRotateHint"
+                app:layout_constraintLeft_toRightOf="@id/txtRotateHint"
+                app:layout_constraintRight_toLeftOf="@id/txtRotateValue"
+                app:layout_constraintTop_toTopOf="@id/txtRotateHint" />
+
+            <TextView
+                android:id="@+id/txtRotateValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/txtRotateHint"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/txtRotateHint"
+                tools:text="100" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutTranslation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#80000000"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/layoutOp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <TextView
+                android:id="@+id/txtTranslationHorizontalHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="左右" />
+
+            <SeekBar
+                android:id="@+id/seekBarTranslationHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:max="200"
+                android:progress="100"
+                android:progressDrawable="@drawable/image_picker_seek_bar"
+                app:layout_constraintBottom_toBottomOf="@id/txtTranslationHorizontalHint"
+                app:layout_constraintLeft_toRightOf="@id/txtTranslationHorizontalHint"
+                app:layout_constraintRight_toLeftOf="@id/txtTranslationHorizontalValue"
+                app:layout_constraintTop_toTopOf="@id/txtTranslationHorizontalHint" />
+
+            <TextView
+                android:id="@+id/txtTranslationHorizontalValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/txtTranslationHorizontalHint"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/txtTranslationHorizontalHint"
+                tools:text="100" />
+
+            <TextView
+                android:id="@+id/txtTranslationVerticalHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtTranslationHorizontalHint"
+                tools:text="上下" />
+
+            <SeekBar
+                android:id="@+id/seekBarTranslationVertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:max="200"
+                android:progress="0"
+                android:progressDrawable="@drawable/image_picker_seek_bar"
+                app:layout_constraintBottom_toBottomOf="@id/txtTranslationVerticalHint"
+                app:layout_constraintLeft_toRightOf="@id/txtTranslationVerticalHint"
+                app:layout_constraintRight_toLeftOf="@id/txtTranslationVerticalValue"
+                app:layout_constraintTop_toTopOf="@id/txtTranslationVerticalHint" />
+
+            <TextView
+                android:id="@+id/txtTranslationVerticalValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/txtTranslationVerticalHint"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/txtTranslationVerticalHint"
+                tools:text="100" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
